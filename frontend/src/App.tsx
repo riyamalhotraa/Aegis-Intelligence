@@ -1,11 +1,9 @@
-import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 import { ToastProvider } from '@/contexts/ToastContext'
 import { RouterProvider, useRouter } from '@/contexts/RouterContext'
 import { ROUTES } from '@/router/routes'
 
-import { LoginPage } from '@/pages/LoginPage'
 import { MissionControlPage } from '@/pages/MissionControlPage'
-import { AIWorkspacePage } from '@/pages/AIWorkspacePage'
 import { AICommandCenterPage } from '@/pages/AICommandCenterPage'
 import { PaymentRequestsPage } from '@/pages/PaymentRequestsPage'
 import { ApprovalCenterPage } from '@/pages/ApprovalCenterPage'
@@ -20,7 +18,6 @@ import { SettingsPage } from '@/pages/SettingsPage'
 
 const routeTable: Record<string, () => JSX.Element> = {
   [ROUTES.mission]: MissionControlPage,
-  [ROUTES.workspace]: AIWorkspacePage,
   [ROUTES.commandCenter]: AICommandCenterPage,
   [ROUTES.paymentRequests]: PaymentRequestsPage,
   [ROUTES.approvals]: ApprovalCenterPage,
@@ -34,29 +31,12 @@ const routeTable: Record<string, () => JSX.Element> = {
   [ROUTES.settings]: SettingsPage,
 }
 
-function AuthenticatedApp() {
+function AppRouter() {
   const { path } = useRouter()
+
   const Page = routeTable[path] ?? MissionControlPage
+
   return <Page />
-}
-
-function RootRouter() {
-  const { user } = useAuth()
-  const { path, navigate } = useRouter()
-
-  if (!user) {
-    if (path !== ROUTES.login) {
-      // Defer to avoid navigating during render.
-      queueMicrotask(() => navigate(ROUTES.login))
-    }
-    return <LoginPage />
-  }
-
-  if (path === ROUTES.login) {
-    queueMicrotask(() => navigate(ROUTES.mission))
-  }
-
-  return <AuthenticatedApp />
 }
 
 export default function App() {
@@ -64,7 +44,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
         <RouterProvider>
-          <RootRouter />
+          <AppRouter />
         </RouterProvider>
       </ToastProvider>
     </AuthProvider>

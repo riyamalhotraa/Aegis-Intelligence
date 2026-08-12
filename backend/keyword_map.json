@@ -1,0 +1,219 @@
+{
+  "research": {
+    "priority": 100,
+    "keywords": [
+      "research",
+      "analyze",
+      "analysis",
+      "market",
+      "stock",
+      "stocks",
+      "finance",
+      "financial",
+      "company",
+      "companies",
+      "earnings",
+      "revenue",
+      "profit",
+      "investment",
+      "invest",
+      "report",
+      "industry",
+      "competitor",
+      "quarterly",
+      "annual",
+      "filing",
+      "10-k",
+      "10-q",
+      "balance sheet"
+    ]
+  },
+
+  "travel": {
+    "priority": 90,
+    "keywords": [
+      "travel",
+      "trip",
+      "flight",
+      "flights",
+      "hotel",
+      "hotels",
+      "booking",
+      "book",
+      "vacation",
+      "holiday",
+      "destination",
+      "itinerary",
+      "ticket",
+      "airline"
+    ]
+  },
+
+  "payment": {
+    "priority": 85,
+    "keywords": [
+      "payment",
+      "pay",
+      "invoice",
+      "billing",
+      "purchase",
+      "checkout",
+      "transaction",
+      "subscription"
+    ]
+  },
+
+  "image_generation": {
+    "priority": 80,
+    "keywords": [
+      "image",
+      "images",
+      "picture",
+      "photo",
+      "poster",
+      "banner",
+      "thumbnail",
+      "logo",
+      "illustration",
+      "design",
+      "generate image",
+      "create image",
+      "draw",
+      "artwork"
+    ]
+  },
+
+  "video_generation": {
+    "priority": 75,
+    "keywords": [
+      "video",
+      "videos",
+      "animation",
+      "reel",
+      "movie",
+      "clip",
+      "generate video",
+      "create video"
+    ]
+  },
+
+  "speech": {
+    "priority": 70,
+    "keywords": [
+      "voice",
+      "speech",
+      "audio",
+      "microphone",
+      "transcribe",
+      "transcription",
+      "speech to text",
+      "text to speech",
+      "voiceover"
+    ]
+  },
+
+  "translation": {
+    "priority": 65,
+    "keywords": [
+      "translate",
+      "translation",
+      "language",
+      "convert language",
+      "multilingual"
+    ]
+  },
+
+  "maps": {
+    "priority": 60,
+    "keywords": [
+      "map",
+      "maps",
+      "location",
+      "route",
+      "directions",
+      "distance",
+      "nearby",
+      "places",
+      "navigation"
+    ]
+  },
+
+  "weather": {
+    "priority": 55,
+    "keywords": [
+      "weather",
+      "forecast",
+      "temperature",
+      "rain",
+      "humidity",
+      "wind",
+      "climate"
+    ]
+  },
+
+  "documents": {
+    "priority": 50,
+    "keywords": [
+      "document",
+      "documents",
+      "drive",
+      "file",
+      "files",
+      "folder",
+      "pdf",
+      "spreadsheet",
+      "excel",
+      "sheet",
+      "word",
+      "presentation",
+      "slides"
+    ]
+  },
+
+  "email": {
+    "priority": 45,
+    "keywords": [
+      "email",
+      "mail",
+      "gmail",
+      "outlook",
+      "inbox",
+      "compose",
+      "send",
+      "reply",
+      "forward"
+    ]
+  },
+
+  "search": {
+    "priority": 40,
+    "keywords": [
+      "search",
+      "find",
+      "lookup",
+      "browse",
+      "web",
+      "internet",
+      "google",
+      "information"
+    ]
+  },
+
+  "code": {
+    "priority": 35,
+    "keywords": [
+      "code",
+      "coding",
+      "program",
+      "programming",
+      "github",
+      "repository",
+      "repo",
+      "bug",
+      "debug",
+      "script",
+      "function",
+      "api"
+    ]
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "research": [
+    {
+      "name": "Bloomberg API",
+      "provider": "Bloomberg",
+      "cost": 50,
+      "description": "Premium financial market data, company filings, earnings, and analyst insights."
+    },
+    {
+      "name": "Alpha Vantage",
+      "provider": "Alpha Vantage",
+      "cost": 0,
+      "description": "Free stock market and financial data API."
+    }
+  ],
+
+  "travel": [
+    {
+      "name": "Skyscanner API",
+      "provider": "Skyscanner",
+      "cost": 150,
+      "description": "Search flights, hotels, and travel prices."
+    },
+    {
+      "name": "Amadeus API",
+      "provider": "Amadeus",
+      "cost": 250,
+      "description": "Enterprise travel booking and itinerary services."
+    }
+  ],
+
+  "maps": [
+    {
+      "name": "Google Maps API",
+      "provider": "Google",
+      "cost": 50,
+      "description": "Maps, geocoding, routing, and nearby places."
+    },
+    {
+      "name": "Mapbox API",
+      "provider": "Mapbox",
+      "cost": 30,
+      "description": "Custom maps, navigation, and location services."
+    }
+  ],
+
+  "email": [
+    {
+      "name": "Gmail API",
+      "provider": "Google",
+      "cost": 0,
+      "description": "Read, send, and manage Gmail emails."
+    },
+    {
+      "name": "Microsoft Graph Mail API",
+      "provider": "Microsoft",
+      "cost": 0,
+      "description": "Access Outlook mail and Microsoft 365 accounts."
+    }
+  ],
+
+  "documents": [
+    {
+      "name": "Google Drive API",
+      "provider": "Google",
+      "cost": 0,
+      "description": "Access and manage Google Drive files."
+    },
+    {
+      "name": "Dropbox API",
+      "provider": "Dropbox",
+      "cost": 0,
+      "description": "Store and retrieve files from Dropbox."
+    }
+  ],
+
+  "image_generation": [
+    {
+      "name": "OpenAI Images API",
+      "provider": "OpenAI",
+      "cost": 80,
+      "description": "Generate images from text prompts."
+    },
+    {
+      "name": "Stability AI API",
+      "provider": "Stability AI",
+      "cost": 60,
+      "description": "Generate and edit AI images."
+    }
+  ],
+
+  "video_generation": [
+    {
+      "name": "Runway API",
+      "provider": "Runway",
+      "cost": 200,
+      "description": "Generate AI videos from text or images."
+    },
+    {
+      "name": "Pika API",
+      "provider": "Pika",
+      "cost": 180,
+      "description": "Create short AI-generated videos."
+    }
+  ],
+
+  "speech": [
+    {
+      "name": "ElevenLabs API",
+      "provider": "ElevenLabs",
+      "cost": 100,
+      "description": "High-quality AI voice generation."
+    },
+    {
+      "name": "Google Speech-to-Text API",
+      "provider": "Google",
+      "cost": 40,
+      "description": "Convert spoken audio into text."
+    }
+  ],
+
+  "translation": [
+    {
+      "name": "Google Translate API",
+      "provider": "Google",
+      "cost": 40,
+      "description": "Translate text between languages."
+    },
+    {
+      "name": "DeepL API",
+      "provider": "DeepL",
+      "cost": 60,
+      "description": "High-quality multilingual translation."
+    }
+  ],
+
+  "weather": [
+    {
+      "name": "OpenWeather API",
+      "provider": "OpenWeather",
+      "cost": 0,
+      "description": "Current weather and forecasts."
+    },
+    {
+      "name": "WeatherAPI",
+      "provider": "WeatherAPI",
+      "cost": 20,
+      "description": "Weather forecasts and historical weather data."
+    }
+  ],
+
+  "search": [
+    {
+      "name": "SerpAPI",
+      "provider": "SerpAPI",
+      "cost": 120,
+      "description": "Google Search results through an API."
+    },
+    {
+      "name": "Tavily Search API",
+      "provider": "Tavily",
+      "cost": 70,
+      "description": "AI-optimized web search for LLM agents."
+    }
+  ],
+
+  "code": [
+    {
+      "name": "GitHub API",
+      "provider": "GitHub",
+      "cost": 0,
+      "description": "Access repositories, issues, pull requests, and commits."
+    }
+  ],
+
+  "payment": [
+    {
+      "name": "Stripe API",
+      "provider": "Stripe",
+      "cost": 100,
+      "description": "Process online payments and subscriptions."
+    },
+    {
+      "name": "Razorpay API",
+      "provider": "Razorpay",
+      "cost": 100,
+      "description": "Accept payments and manage Indian payment workflows."
+    }
+  ]
+}

@@ -318,7 +318,7 @@ export function PolicyBuilderPage() {
                     <span>
                       Type:{' '}
                       <strong className="text-ink">
-                        {suggestion.suggestion_type.replaceAll('_', ' ')}
+                        {suggestion.suggestion_type.replace(/_/g, ' ')}
                       </strong>
                     </span>
 

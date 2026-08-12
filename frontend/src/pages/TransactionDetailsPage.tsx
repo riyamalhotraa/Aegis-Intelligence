@@ -9,7 +9,9 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { useAsync } from '@/hooks/useAsync'
 
 import { fetchTransactions } from '@/services/transactionsService'
-
+import {
+  createPaymentRequest,
+} from '@/services/paymentsService'
 import type { Transaction } from '@/types'
 
 
@@ -304,7 +306,7 @@ export function TransactionDetailsPage() {
 
               <p className="mt-1 text-ink">
                 {new Date(
-                  active.created_at
+                  active.created_at ?? active.timestamp
                 ).toLocaleString()}
               </p>
 

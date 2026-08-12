@@ -126,6 +126,8 @@ export interface PaymentRequest {
 
 export interface Transaction {
   id: string
+
+  // Basic transaction information
   hash: string
   agentId: string
   from: string
@@ -133,19 +135,44 @@ export interface Transaction {
   amount: number
   currency: string
 
+  // Transaction / payment lifecycle
   status:
     | 'confirmed'
     | 'pending'
     | 'failed'
+    | 'payment_required'
+    | 'authorized'
+    | 'verified'
+    | 'verification_failed'
+    | 'settling'
+    | 'settled'
 
+  // Payment execution information
+  task?: string
+  provider?: string
+  api?: string
+
+  request_id?: string
+  payment_id?: string
+
+  payment_signature?: string | null
+  transaction_hash?: string | null
+
+  network?: string
+  pay_to?: string
+
+  // Blockchain information
   blockHeight: number
   confirmations: number
-  timestamp: string
   networkFee: number
+
+  // Timestamps
+  timestamp: string
+  created_at?: string
+  settled_at?: string | null
+
   steps: TransactionStep[]
 }
-
-
 // ---------------------------------------------------------------------------
 // Transaction Pipeline Steps
 // ---------------------------------------------------------------------------

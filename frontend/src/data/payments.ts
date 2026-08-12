@@ -11,7 +11,8 @@ export const approvals: Approval[] = [
     riskLevel: 'medium',
     status: 'pending',
     createdAt: '3m ago',
-    reason: 'Batch settlement exceeds single-transaction autonomy threshold ($25,000).',
+    reason:
+      'Batch settlement exceeds single-transaction autonomy threshold ($25,000).',
     policyRefs: ['POL-004 Spend Ceiling', 'POL-011 Vendor Allowlist'],
   },
   {
@@ -24,7 +25,8 @@ export const approvals: Approval[] = [
     riskLevel: 'high',
     status: 'pending',
     createdAt: '9m ago',
-    reason: 'Novel counterparty wallet not present in verified registry.',
+    reason:
+      'Novel counterparty wallet not present in verified registry.',
     policyRefs: ['POL-002 Counterparty Verification'],
   },
   {
@@ -37,7 +39,8 @@ export const approvals: Approval[] = [
     riskLevel: 'low',
     status: 'approved',
     createdAt: '1h ago',
-    reason: 'Routine campaign disbursement within delegated authority.',
+    reason:
+      'Routine campaign disbursement within delegated authority.',
     policyRefs: ['POL-004 Spend Ceiling'],
   },
   {
@@ -50,16 +53,110 @@ export const approvals: Approval[] = [
     riskLevel: 'low',
     status: 'rejected',
     createdAt: '3h ago',
-    reason: 'Duplicate renewal already processed this billing cycle.',
+    reason:
+      'Duplicate renewal already processed this billing cycle.',
     policyRefs: ['POL-009 Duplicate Detection'],
   },
 ]
 
+
+/*
+ * Legacy/demo payment data.
+ *
+ * The live Payment Requests page now gets requests from the backend.
+ * These objects are kept only because some existing frontend services
+ * still import this module.
+ */
+
 export const paymentRequests: PaymentRequest[] = [
-  { id: 'PMT-50291', vendor: 'Northwind Logistics', agentId: 'AEGIS-410-NOVA', amount: 48200, currency: 'USD', category: 'Logistics', status: 'pending', riskLevel: 'medium', createdAt: '3m ago', memo: 'Q3 batch settlement, invoice #NL-2291' },
-  { id: 'PMT-50290', vendor: 'Helios Cloud Infra', agentId: 'AEGIS-905-LUNA', amount: 8340, currency: 'USD', category: 'Infrastructure', status: 'processing', riskLevel: 'low', createdAt: '22m ago', memo: 'Monthly compute allocation' },
-  { id: 'PMT-50288', vendor: 'Meridian Data Partners', agentId: 'AEGIS-772-BETA', amount: 1200, currency: 'USD', category: 'Data Licensing', status: 'settled', riskLevel: 'low', createdAt: '1h ago', memo: 'Sentiment corpus license renewal' },
-  { id: 'PMT-50285', vendor: 'Quantum Liquidity Desk', agentId: 'AEGIS-118-ORION', amount: 132000, currency: 'USD', category: 'Treasury', status: 'pending', riskLevel: 'high', createdAt: '9m ago', memo: 'Cross-chain rebalancing tranche 2/3' },
-  { id: 'PMT-50280', vendor: 'Argus Compliance Suite', agentId: 'AEGIS-905-LUNA', amount: 640, currency: 'USD', category: 'Compliance', status: 'settled', riskLevel: 'low', createdAt: '5h ago', memo: 'Filing cross-reference API' },
-  { id: 'PMT-50277', vendor: 'Unregistered Wallet 0x9f2…', agentId: 'AEGIS-233-VEGA', amount: 15000, currency: 'USD', category: 'Unclassified', status: 'rejected', riskLevel: 'critical', createdAt: '8h ago', memo: 'Blocked — counterparty not in verified registry' },
+  {
+    id: 'PMT-50291',
+    vendor: 'Northwind Logistics',
+    provider: 'Northwind Logistics',
+    agentId: 'AEGIS-410-NOVA',
+    amount: 48200,
+    currency: 'USD',
+    category: 'Logistics',
+    decision: 'human_review',
+    status: 'pending',
+    riskLevel: 'medium',
+    decisionBy: 'AEGIS Guardrails',
+    createdAt: '3m ago',
+    memo: 'Q3 batch settlement, invoice #NL-2291',
+  },
+  {
+    id: 'PMT-50290',
+    vendor: 'Helios Cloud Infra',
+    provider: 'Helios Cloud Infra',
+    agentId: 'AEGIS-905-LUNA',
+    amount: 8340,
+    currency: 'USD',
+    category: 'Infrastructure',
+    decision: 'approved',
+    status: 'processing',
+    riskLevel: 'low',
+    decisionBy: 'AEGIS Guardrails',
+    createdAt: '22m ago',
+    memo: 'Monthly compute allocation',
+  },
+  {
+    id: 'PMT-50288',
+    vendor: 'Meridian Data Partners',
+    provider: 'Meridian Data Partners',
+    agentId: 'AEGIS-772-BETA',
+    amount: 1200,
+    currency: 'USD',
+    category: 'Data Licensing',
+    decision: 'approved',
+    status: 'settled',
+    riskLevel: 'low',
+    decisionBy: 'AEGIS Guardrails',
+    createdAt: '1h ago',
+    memo: 'Sentiment corpus license renewal',
+  },
+  {
+    id: 'PMT-50285',
+    vendor: 'Quantum Liquidity Desk',
+    provider: 'Quantum Liquidity Desk',
+    agentId: 'AEGIS-118-ORION',
+    amount: 132000,
+    currency: 'USD',
+    category: 'Treasury',
+    decision: 'human_review',
+    status: 'pending',
+    riskLevel: 'high',
+    decisionBy: 'AEGIS Guardrails',
+    createdAt: '9m ago',
+    memo: 'Cross-chain rebalancing tranche 2/3',
+  },
+  {
+    id: 'PMT-50280',
+    vendor: 'Argus Compliance Suite',
+    provider: 'Argus Compliance Suite',
+    agentId: 'AEGIS-905-LUNA',
+    amount: 640,
+    currency: 'USD',
+    category: 'Compliance',
+    decision: 'approved',
+    status: 'settled',
+    riskLevel: 'low',
+    decisionBy: 'AEGIS Guardrails',
+    createdAt: '5h ago',
+    memo: 'Filing cross-reference API',
+  },
+  {
+    id: 'PMT-50277',
+    vendor: 'Unregistered Wallet 0x9f2…',
+    provider: 'Unregistered Wallet',
+    agentId: 'AEGIS-233-VEGA',
+    amount: 15000,
+    currency: 'USD',
+    category: 'Unclassified',
+    decision: 'blocked',
+    status: 'rejected',
+    riskLevel: 'critical',
+    decisionBy: 'AEGIS Guardrails',
+    createdAt: '8h ago',
+    memo: 'Blocked — counterparty not in verified registry',
+  },
 ]

@@ -2,7 +2,7 @@ import { policies } from '@/data/governance'
 import { withFlakiness } from './api'
 import type { Policy } from '@/types'
 
-const API_BASE_URL = 'http://127.0.0.1:8000'
+const API_BASE_URL = 'https://aegis-backend-lx1z.onrender.com'
 
 let store = [...policies]
 

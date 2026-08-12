@@ -1,6 +1,6 @@
 import type { Guardrail } from '@/types'
 
-const API_BASE_URL = 'http://127.0.0.1:8000'
+const API_BASE_URL = 'https://aegis-backend-lx1z.onrender.com'
 
 export async function fetchGuardrails(): Promise<Guardrail[]> {
   const response = await fetch(

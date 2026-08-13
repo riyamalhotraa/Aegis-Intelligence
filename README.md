@@ -1,95 +1,321 @@
-# AEGIS Intelligence — Enterprise AI Governance Platform
+AEGIS --- AI Agent Payment Governance
 
-A production-quality React + TypeScript rebuild of the Stitch prototype, unified under a
-single design system and branded consistently as **AEGIS Intelligence** across all 14 pages.
+A governance and transaction-control layer for autonomous AI-agent
+payments.
 
-## Getting started
+Overview
 
-```bash
+AEGIS is a full-stack platform designed to govern financial actions
+initiated by autonomous AI agents. It evaluates payment requests against
+configurable policies and guardrails before execution, enabling
+legitimate transactions to proceed while controlling risky or
+unauthorized spending.
+
+AEGIS focuses on the governance challenges created by x402-style
+machine-to-machine payments, where AI agents can programmatically access
+paid APIs and services.
+
+Problem
+
+As AI agents become capable of acting independently, they can also
+initiate financial transactions with limited human intervention. This
+creates risks such as:
+
+Unauthorized spending
+
+Excessive or budget-breaking payments
+
+Unintended transactions
+
+Repeated or duplicate transactions
+
+Transactions with untrusted providers
+
+Limited visibility into agent-driven financial activity
+
+Core Workflow
+
+AI Agent
+   ↓
+Payment Request
+   ↓
+Policy Evaluation
+   ↓
+Guardrails / Risk Checks
+   ↓
+Approve / Human Review / Reject
+   ↓
+Payment Execution
+   ↓
+Settlement
+   ↓
+Transaction & Audit Records
+
+Key Features
+
+AI Agent Monitoring
+
+Tracks agent activity, objectives, risk levels, and payment behavior.
+
+Payment Request Management
+
+Captures payment requests with agent, provider, amount, category, risk,
+and status information.
+
+Policy & Guardrail Engine
+
+Supports configurable controls for:
+
+Spending limits
+
+Provider allowlists
+
+Frequency limits
+
+Category limits
+
+Daily budgets
+
+Risk rules
+
+Automated Decisions
+
+Routes transactions into:
+
+Approved --- can proceed automatically
+
+Human Approval --- requires additional authorization
+
+Rejected --- violates configured governance rules
+
+Automated Transaction Execution
+
+Approved requests can proceed through the transaction execution
+workflow.
+
+x402-Style Payment Lifecycle
+
+Payment Required → Authorized → Verified → Settling → Settled
+
+Blockchain Monitoring
+
+Tracks transaction IDs, hashes, network information, settlement status,
+timestamps, and blockchain activity.
+
+Dashboard
+
+Includes Mission Control, AI Command Center, Payment Requests, Approval
+Center, Transaction Details, Policy Builder, Guardrails, Incident
+Center, Blockchain Command Center, Analytics, Audit Logs, and Settings.
+
+Architecture
+
+AI Agents
+    ↓
+Payment Request
+    ↓
+AEGIS Governance Layer
+ ┌─────────────────────────┐
+ │ Policy Engine           │
+ │ Guardrails              │
+ │ Risk Evaluation         │
+ └────────────┬────────────┘
+              ↓
+      Approve / Review / Reject
+              ↓
+      Payment Execution
+              ↓
+   Settlement / Blockchain
+              ↓
+       Audit & Analytics
+
+Technology Stack
+
+Layer             Technology
+
+Frontend          React, TypeScript, Vite, Tailwind CSS
+Backend           Python, FastAPI
+AI / Agents       LangChain, LangGraph, LLM APIs
+Governance        Custom Policy Engine + Guardrail Engine
+Payments          x402-style payment lifecycle
+Blockchain        Blockchain transaction layer / Base Sepolia
+Database          SQLite planned for persistent records
+APIs              REST
+Version Control   Git + GitHub
+Deployment        Render
+
+Project Structure
+
+Aegis/
+├── backend/
+│   ├── main.py
+│   ├── blockchain.py
+│   ├── blockchain.json
+│   ├── guardrails.py
+│   ├── policy_builder.py
+│   ├── policy_store.py
+│   ├── request_history.py
+│   ├── selector.py
+│   ├── api_catalog.json
+│   ├── keyword_map.json
+│   ├── requirements.txt
+│   └── x402/
+│       ├── __init__.py
+│       ├── payment_models.py
+│       └── payment_service.py
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── constants/
+│   │   ├── contexts/
+│   │   ├── data/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── router/
+│   │   ├── services/
+│   │   └── types/
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
+│
+├── README.md
+└── .gitignore
+
+x402 Integration
+
+x402 is an HTTP-native approach to programmatic payments built around
+the 402 Payment Required mechanism.
+
+AEGIS currently models an x402-style payment lifecycle within its
+governance and transaction workflow.
+
+Planned x402 Gateway
+
+A dedicated gateway will eventually sit between AI agents and payment
+providers:
+
+AI Agent
+   ↓
+AEGIS x402 Gateway
+   ↓
+Policy + Guardrails
+   ↓
+Payment Verification
+   ↓
+Settlement
+   ↓
+Blockchain
+
+The gateway will validate transaction context and enforce AEGIS policies
+before approved payments proceed toward settlement.
+
+Database Roadmap
+
+A planned SQLite database will provide persistent storage for:
+
+Payment requests
+
+Transactions
+
+Blockchain records
+
+Policy configurations
+
+Guardrail decisions
+
+Approval decisions
+
+Audit records
+
+This will enable historical querying, persistence across restarts, and
+stronger analytics.
+
+Deployment
+
+AEGIS uses separate frontend and backend services.
+
+Backend
+
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+Frontend
+
+cd frontend
 npm install
-npm run dev      # start the dev server at http://localhost:5173
-npm run build    # type-check + production build to dist/
-npm run lint     # type-check only
-```
+npm run dev
 
-> This app was built in a sandboxed environment without npm registry access, so the
-> dependency tree could not be installed or build-verified here. It has been checked with
-> `tsc --noEmit` against locally available React sources (no syntax errors, all internal
-> `@/` imports resolve correctly) — run `npm install` on a machine with internet access to
-> pull in `@types/react`, Vite, Tailwind, etc. and do a full build before shipping.
+The production frontend and backend are deployed independently on Render
+and communicate through REST APIs.
 
-Sign in with any Enterprise ID + passcode — auth is a mock service (`src/services/authService.ts`)
-that stores a session in `localStorage`; there's no real backend.
+Environment Variables
 
-## Architecture
+Never commit API keys, wallet credentials, or other secrets to GitHub.
 
-```
-src/
-  types/        Central domain types (Agent, Policy, Incident, Transaction, …)
-  data/         Mock datasets — the "seed data" for the mock API layer
-  services/     Async functions that stand in for a real backend (simulated latency,
-                in-memory mutation for approve/reject/save/toggle flows)
-  contexts/     AuthContext, ToastContext, RouterContext (see "Routing" below)
-  hooks/        useAsync — the loading/success/error/empty data-fetching pattern used
-                by every page
-  components/
-    ui/         Reusable primitives: Button, Badge, Card, Table, Modal, Drawer, Toast,
-                Input/Select/Textarea/Switch, Skeleton, EmptyState, ErrorState, Tabs,
-                ProgressBar
-    charts/     Hand-rolled SVG LineChart / BarChart / DonutChart / Sparkline
-    layout/     Sidebar, TopBar, AppShell, PageHeader
-    icons/      Icon — a single wrapper around Material Symbols so every icon in the
-                app is sized and weighted identically
-  pages/        One component per route, composed entirely from the above
-  router/       Route path constants
-```
+Use .env locally and configure production secrets through the
+deployment platform.
 
-Every page follows the same shape: `AppShell` → `PageHeader` → data via `useAsync` →
-loading skeleton / error state / empty state / populated view. There is no page-specific
-one-off styling — everything is built from the shared `components/ui` and `components/charts`
-library, and every color, radius, spacing value, and font comes from `tailwind.config.ts`.
+Demo Scenarios
 
-## Routing
+AEGIS can demonstrate three governance outcomes:
 
-There's no React Router dependency (this environment couldn't install one to verify against).
-Instead `src/contexts/RouterContext.tsx` is a ~40-line hash-based router (`#/approvals`, etc.)
-with the same `navigate()` / `path` ergonomics you'd get from a real router. If you'd rather
-use `react-router-dom`, it's a drop-in swap — `ROUTES` in `src/router/routes.ts` already
-defines every path as a constant used throughout the app.
+🟢 Automatic Approval
 
-## Design system
+A low-risk request within configured policies.
 
-Single source of truth: `tailwind.config.ts`.
+🟡 Human-in-the-Loop
 
-- **Color** — one dark palette (`bg`, `surface` + 4 elevations, `border` + 2 variants, `ink`
-  + 3 variants, `accent` lime, and semantic `success`/`warning`/`danger`/`info`). Nothing in
-  the app hardcodes a hex value outside this file.
-- **Type** — Inter for all UI text, JetBrains Mono for IDs/hashes/timestamps/code, on a
-  fixed scale (`display`, `h1`–`h3`, `body-lg`/`body`/`body-sm`, `caption`, `label`).
-- **Radius** — `sm`(2px) → `xl`(12px), sharp and consistent (Palantir/Datadog-style, not
-  bubbly).
-- **Spacing / shadows / motion** — shared tokens (`shadow-card`, `shadow-elevated`,
-  `animate-fade-in`, `animate-pulse-glow`) instead of one-off values per page.
+A legitimate request that exceeds the autonomous spending threshold and
+requires additional approval.
 
-## Assumptions made while merging the two Stitch exports
+🔴 Rejection
 
-- **Branding**: "AEGIS Intelligence" used everywhere (nav, login, page titles), replacing
-  the older "Aegis AI OS" naming from the first export.
-- **Theme**: the project mixed a light Mission Control mockup with a dark Login mockup.
-  Consolidated on **one dark theme** throughout, matching the more premium/enterprise
-  Login treatment, since running both themes across different pages was exactly the kind
-  of inconsistency this rebuild was meant to remove.
-- **Pages with no mockup** (Payment Requests, Guardrails, Analytics, Audit Logs, Settings)
-  were designed fresh, strictly reusing the shared component library so they read as
-  native parts of the same product.
-- **Charts**: implemented as small dependency-free SVG components rather than pulling in
-  a charting library, since this environment couldn't install/verify one.
+A request that violates a configured guardrail.
 
-## Known gaps to close before production
+Future Scope
 
-- No real backend — every `services/*.ts` file is a mock; wire these to your actual API.
-- No automated tests.
-- Accessibility pass done at the component level (focus rings, aria-labels, semantic
-  elements) but hasn't been audited with a screen reader.
-- If you swap in `react-router-dom`, update `App.tsx`'s route table and remove
-  `contexts/RouterContext.tsx`.
+Dedicated x402 Gateway for pre-settlement transaction governance
+
+Persistent SQLite database for transaction and blockchain
+history
+
+Real on-chain x402 settlement
+
+Advanced AI risk and anomaly detection
+
+Real-time alerts
+
+Additional payment providers and blockchain networks
+
+Security Considerations
+
+AEGIS is currently a project prototype. Production deployment would
+require additional authentication, authorization, secure wallet/key
+management, persistent storage, transaction-signing controls, security
+testing, monitoring, and compliance controls.
+
+Real-value transactions should only be enabled after appropriate
+security and operational validation.
+
+References
+
+x402 Documentation
+
+x402 Official Site
+
+FastAPI Documentation
+
+React Documentation
+
+SQLite Documentation
+
+Project
+
+AEGIS --- AI Agent Payment Governance
+
+A prototype exploring how autonomous AI agents can perform
+machine-to-machine payments while remaining subject to configurable
+financial governance, risk controls, and transaction visibility.

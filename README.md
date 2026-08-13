@@ -1,25 +1,14 @@
-AEGIS --- AI Agent Payment Governance
+🛡️ AEGIS — AI Agent Payment Governance
 
-A governance and transaction-control layer for autonomous AI-agent
-payments.
+A governance and transaction-control layer for autonomous AI-agent payments.
 
-Overview
+AEGIS is a full-stack platform designed to govern financial actions initiated by autonomous AI agents. It evaluates payment requests against configurable policies and guardrails before execution, enabling legitimate transactions to proceed while controlling risky or unauthorized spending.
 
-AEGIS is a full-stack platform designed to govern financial actions
-initiated by autonomous AI agents. It evaluates payment requests against
-configurable policies and guardrails before execution, enabling
-legitimate transactions to proceed while controlling risky or
-unauthorized spending.
+The project focuses on the governance challenges created by x402-style machine-to-machine payments, where AI agents can programmatically access paid APIs and services.
 
-AEGIS focuses on the governance challenges created by x402-style
-machine-to-machine payments, where AI agents can programmatically access
-paid APIs and services.
+🚨 Problem
 
-Problem
-
-As AI agents become capable of acting independently, they can also
-initiate financial transactions with limited human intervention. This
-creates risks such as:
+As AI agents become increasingly autonomous, they can also initiate financial transactions with limited human intervention. This introduces risks such as:
 
 Unauthorized spending
 
@@ -33,118 +22,150 @@ Transactions with untrusted providers
 
 Limited visibility into agent-driven financial activity
 
-Core Workflow
+💡 Solution
 
-AI Agent
-   ↓
-Payment Request
-   ↓
-Policy Evaluation
-   ↓
-Guardrails / Risk Checks
-   ↓
-Approve / Human Review / Reject
-   ↓
-Payment Execution
-   ↓
-Settlement
-   ↓
-Transaction & Audit Records
+AEGIS evaluates every payment request against configurable financial and risk policies before it reaches transaction execution.
 
-Key Features
+AI Agent → Payment Request → Policy Evaluation → Guardrails
+                    ↓
+       Approve / Human Approval / Reject
+                    ↓
+             Payment Execution
+                    ↓
+              Settlement
+                    ↓
+         Transaction & Audit Records
 
-AI Agent Monitoring
+✨ Key Features
 
-Tracks agent activity, objectives, risk levels, and payment behavior.
+🤖 AI Agent Governance — Monitor and control payment activity initiated by autonomous agents.
 
-Payment Request Management
+💳 Payment Request Management — View agent, provider, amount, category, risk level, and status.
 
-Captures payment requests with agent, provider, amount, category, risk,
-and status information.
+🛡️ Policy Builder & Guardrails — Spending limits, provider allowlists, frequency limits, category limits, daily budgets, and risk rules.
 
-Policy & Guardrail Engine
+👤 Human-in-the-Loop Approvals — Route legitimate but higher-risk transactions for human authorization.
 
-Supports configurable controls for:
+⚡ Automated Decisions — Approved, Human Approval Required, or Rejected.
 
-Spending limits
+⛓️ Blockchain Monitoring — Track transaction IDs, hashes, network details, settlement status, and timestamps.
 
-Provider allowlists
+📊 Analytics & Auditability — Monitor payments, decisions, incidents, transactions, and system activity.
 
-Frequency limits
+📸 Project Screenshots
 
-Category limits
+The repository includes screenshots of the main AEGIS interfaces.
 
-Daily budgets
+⛓️ Blockchain Command Center
 
-Risk rules
 
-Automated Decisions
 
-Routes transactions into:
+🎛️ Command Center
 
-Approved --- can proceed automatically
 
-Human Approval --- requires additional authorization
 
-Rejected --- violates configured governance rules
+🛡️ Guardrails
 
-Automated Transaction Execution
 
-Approved requests can proceed through the transaction execution
-workflow.
 
-x402-Style Payment Lifecycle
+📋 Policy Builder
 
-Payment Required → Authorized → Verified → Settling → Settled
 
-Blockchain Monitoring
 
-Tracks transaction IDs, hashes, network information, settlement status,
-timestamps, and blockchain activity.
+💳 Payment Requests
 
-Dashboard
 
-Includes Mission Control, AI Command Center, Payment Requests, Approval
-Center, Transaction Details, Policy Builder, Guardrails, Incident
-Center, Blockchain Command Center, Analytics, Audit Logs, and Settings.
 
-Architecture
+🔎 Transaction Details
 
-AI Agents
-    ↓
-Payment Request
-    ↓
-AEGIS Governance Layer
- ┌─────────────────────────┐
- │ Policy Engine           │
- │ Guardrails              │
- │ Risk Evaluation         │
- └────────────┬────────────┘
-              ↓
-      Approve / Review / Reject
-              ↓
-      Payment Execution
-              ↓
-   Settlement / Blockchain
-              ↓
-       Audit & Analytics
 
-Technology Stack
 
-Layer             Technology
+👤 Human Approval
 
-Frontend          React, TypeScript, Vite, Tailwind CSS
-Backend           Python, FastAPI
-AI / Agents       LangChain, LangGraph, LLM APIs
-Governance        Custom Policy Engine + Guardrail Engine
-Payments          x402-style payment lifecycle
-Blockchain        Blockchain transaction layer / Base Sepolia
-Database          SQLite planned for persistent records
-APIs              REST
-Version Control   Git + GitHub
-Deployment        Render
 
-Project Structure
+
+🏗️ Architecture
+
+                         ┌─────────────────┐
+                         │    AI AGENTS    │
+                         └────────┬────────┘
+                                  ↓
+                         ┌─────────────────┐
+                         │ PAYMENT REQUEST │
+                         └────────┬────────┘
+                                  ↓
+                 ┌────────────────────────────────┐
+                 │        AEGIS GOVERNANCE        │
+                 │ Policy Engine • Guardrails     │
+                 │ Risk Evaluation • Approval     │
+                 └───────────────┬────────────────┘
+                                 ↓
+                    ┌────────────┼────────────┐
+                    ↓            ↓            ↓
+                 APPROVE      REVIEW        REJECT
+                    │            │
+                    └──────┬─────┘
+                           ↓
+                  ┌─────────────────┐
+                  │ PAYMENT EXECUTION│
+                  └────────┬────────┘
+                           ↓
+                  ┌─────────────────┐
+                  │ SETTLEMENT /    │
+                  │ BLOCKCHAIN      │
+                  └────────┬────────┘
+                           ↓
+                  ┌─────────────────┐
+                  │ AUDIT & ANALYTICS│
+                  └─────────────────┘
+
+🧰 Technology Stack
+
+Layer
+
+Technology
+
+Frontend
+
+React, TypeScript, Vite, Tailwind CSS
+
+Backend
+
+Python, FastAPI
+
+AI / Agent Components
+
+LangChain, LangGraph, LLM APIs
+
+Governance
+
+Custom Policy Engine + Guardrail Engine
+
+Payments
+
+x402-style payment lifecycle
+
+Blockchain
+
+Blockchain transaction layer / Base Sepolia
+
+Database
+
+SQLite planned for persistent records
+
+APIs
+
+REST
+
+Version Control
+
+Git + GitHub
+
+Deployment
+
+Render
+
+📁 Project Structure
 
 Aegis/
 ├── backend/
@@ -163,38 +184,30 @@ Aegis/
 │       ├── __init__.py
 │       ├── payment_models.py
 │       └── payment_service.py
-│
 ├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── constants/
-│   │   ├── contexts/
-│   │   ├── data/
-│   │   ├── hooks/
-│   │   ├── pages/
-│   │   ├── router/
-│   │   ├── services/
-│   │   └── types/
-│   ├── package.json
-│   ├── vite.config.ts
-│   ├── tailwind.config.ts
-│   └── tsconfig.json
-│
+│   └── src/
+├── screenshots/
+│   ├── blockchain.png
+│   ├── command center.png
+│   ├── guardrails.png
+│   ├── policy builder.png
+│   ├── requests.png
+│   ├── transaction.png
+│   └── user_approval.png
 ├── README.md
 └── .gitignore
 
-x402 Integration
+💳 x402 Integration
 
-x402 is an HTTP-native approach to programmatic payments built around
-the 402 Payment Required mechanism.
+x402 is an HTTP-native approach to programmatic payments built around the 402 Payment Required mechanism.
 
-AEGIS currently models an x402-style payment lifecycle within its
-governance and transaction workflow.
+AEGIS uses an x402-style payment lifecycle within its governance and transaction workflow:
 
-Planned x402 Gateway
+Payment Required → Authorized → Verified → Settling → Settled
 
-A dedicated gateway will eventually sit between AI agents and payment
-providers:
+🔗 Planned x402 Gateway
+
+A dedicated gateway is planned to sit between AI agents and payment providers:
 
 AI Agent
    ↓
@@ -208,10 +221,9 @@ Settlement
    ↓
 Blockchain
 
-The gateway will validate transaction context and enforce AEGIS policies
-before approved payments proceed toward settlement.
+The gateway will validate transaction context and enforce AEGIS policies before approved payments proceed toward settlement.
 
-Database Roadmap
+🗄️ Database Roadmap
 
 A planned SQLite database will provide persistent storage for:
 
@@ -229,12 +241,63 @@ Approval decisions
 
 Audit records
 
-This will enable historical querying, persistence across restarts, and
-stronger analytics.
+This will enable historical querying, persistence across restarts, and stronger analytics.
 
-Deployment
+🔄 Governance Scenarios
 
-AEGIS uses separate frontend and backend services.
+Scenario
+
+Expected Result
+
+Low-risk request within policy
+
+🟢 Automatic Approval
+
+Legitimate request exceeding autonomous threshold
+
+🟡 Human Approval
+
+Request violating a configured guardrail
+
+🔴 Rejection
+
+This demonstrates that AEGIS does not simply allow or block all autonomous payments — it applies context-aware governance.
+
+🌐 API Catalog
+
+AEGIS can model payment requests for services across categories such as:
+
+Financial research
+
+Travel
+
+Maps
+
+Email
+
+Documents
+
+Image generation
+
+Video generation
+
+Speech
+
+Translation
+
+Weather
+
+Web search
+
+Code
+
+Payments
+
+The API catalog contains providers, estimated request costs, categories, and descriptions used by the payment-selection and governance workflow.
+
+☁️ Deployment
+
+AEGIS is deployed as separate frontend and backend services on Render.
 
 Backend
 
@@ -248,59 +311,35 @@ cd frontend
 npm install
 npm run dev
 
-The production frontend and backend are deployed independently on Render
-and communicate through REST APIs.
+The production frontend and backend communicate through REST APIs.
 
-Environment Variables
+🔐 Environment Variables
 
 Never commit API keys, wallet credentials, or other secrets to GitHub.
 
-Use .env locally and configure production secrets through the
-deployment platform.
+Use .env locally and configure production secrets through the deployment platform.
 
-Demo Scenarios
-
-AEGIS can demonstrate three governance outcomes:
-
-🟢 Automatic Approval
-
-A low-risk request within configured policies.
-
-🟡 Human-in-the-Loop
-
-A legitimate request that exceeds the autonomous spending threshold and
-requires additional approval.
-
-🔴 Rejection
-
-A request that violates a configured guardrail.
-
-Future Scope
+🚀 Future Scope
 
 Dedicated x402 Gateway for pre-settlement transaction governance
 
-Persistent SQLite database for transaction and blockchain
-history
+Persistent SQLite database for transaction and blockchain history
 
-Real on-chain x402 settlement
+Production on-chain x402 settlement
 
 Advanced AI risk and anomaly detection
 
 Real-time alerts
 
-Additional payment providers and blockchain networks
+Expanded provider and blockchain network support
 
-Security Considerations
+⚠️ Current Limitations
 
-AEGIS is currently a project prototype. Production deployment would
-require additional authentication, authorization, secure wallet/key
-management, persistent storage, transaction-signing controls, security
-testing, monitoring, and compliance controls.
+AEGIS is currently a project prototype and should not be treated as production financial infrastructure without additional authentication, secure wallet/key management, persistent storage, transaction-signing controls, security testing, monitoring, and compliance controls.
 
-Real-value transactions should only be enabled after appropriate
-security and operational validation.
+Real-value transactions should only be enabled after appropriate security and operational validation.
 
-References
+📚 References
 
 x402 Documentation
 
@@ -312,10 +351,8 @@ React Documentation
 
 SQLite Documentation
 
-Project
+👩‍💻 Project
 
-AEGIS --- AI Agent Payment Governance
+AEGIS — AI Agent Payment Governance
 
-A prototype exploring how autonomous AI agents can perform
-machine-to-machine payments while remaining subject to configurable
-financial governance, risk controls, and transaction visibility.
+A prototype exploring how autonomous AI agents can perform machine-to-machine payments while remaining subject to configurable financial governance, risk controls, human oversight, and transaction visibility.

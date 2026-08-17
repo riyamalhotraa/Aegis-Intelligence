@@ -1,15 +1,17 @@
 import hashlib
 import json
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Dict, List
+
+import anchor
+import config
 
 
 # ============================================================
 # Configuration
 # ============================================================
 
-BLOCKCHAIN_FILE = Path(__file__).parent / "blockchain.json"
+BLOCKCHAIN_FILE = config.LEDGER_FILE
 
 
 # ============================================================
@@ -84,9 +86,6 @@ def create_blockchain_record(request: Dict) -> Dict:
 
     This function should ONLY be called after a final decision.
     """
-    print("🔥 BLOCKCHAIN FUNCTION CALLED")
-    print("REQUEST:", request)
-
     chain = _load_chain()
 
     # Prevent duplicate records for the same request.
@@ -151,6 +150,12 @@ def create_blockchain_record(request: Dict) -> Dict:
     chain.append(block)
 
     _save_chain(chain)
+
+    # Periodically commit the chain head to Base Sepolia so local history
+    # cannot be rewritten without also altering a record we do not control.
+    # Best-effort: a slow testnet must never block a payment decision.
+    if config.ANCHORING_ENABLED and block_number % config.ANCHOR_EVERY == 0:
+        anchor.anchor_head(block_number, block_hash)
 
     return block
 
@@ -321,4 +326,8 @@ def get_blockchain_stats() -> Dict:
         "verifiedBlocks": verification["verifiedBlocks"],
         "tamperedBlocks": verification["tamperedBlocks"],
         "latestBlock": chain[-1] if chain else None,
+
+        # Reported so the UI can state the ledger's real security posture
+        # rather than implying a distributed chain that does not exist.
+        "anchoring": anchor.status(),
     }

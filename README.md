@@ -1,10 +1,38 @@
 🛡️ AEGIS — AI Agent Payment Governance
 
-A governance and transaction-control layer for autonomous AI-agent payments.
+A policy **enforcement point** for autonomous AI-agent payments.
 
-AEGIS is a full-stack platform designed to govern financial actions initiated by autonomous AI agents. It evaluates payment requests against configurable policies and guardrails before execution, enabling legitimate transactions to proceed while controlling risky or unauthorized spending.
+AEGIS sits between AI agents and the services they pay for. Agents hold no
+credentials — they submit an intent, and AEGIS evaluates it against
+configurable policy and, only if allowed, makes the paid call itself.
 
-The project focuses on the governance challenges created by x402-style machine-to-machine payments, where AI agents can programmatically access paid APIs and services.
+The distinction matters. A layer agents *report to* is advisory: an agent that
+never asks is unaffected. A layer that *holds the only credential* is
+enforceable, and refusing requires no cooperation from the agent.
+
+    We don't stop prompt injection. We make it financially inert.
+
+See `docs/ARCHITECTURE.md` for how that works, and run the demo below to watch
+it happen.
+
+## ⚡ The 60-second demo
+
+    cd backend
+    pip install -r requirements.txt
+    python demo_injection.py
+
+Runs the same prompt-injection attack four times — against an agent holding
+its own wallet, against the same agent behind AEGIS, against a legitimate
+provider, and finally against the guard itself. No server needed.
+
+## 🧪 Tests
+
+    cd backend
+    python -m pytest test_guard.py -v
+
+23 tests covering the guard's security properties and every bug this work
+fixed. Each regression test fails against the previous implementation.
+
 
 🚨 Problem
 
@@ -135,7 +163,7 @@ Python, FastAPI
 
 AI / Agent Components
 
-LangChain, LangGraph, LLM APIs
+LangChain + Groq — used for policy suggestions only. Enforcement is deterministic; an LLM never decides whether to release money.
 
 Governance
 
@@ -147,11 +175,11 @@ x402-style payment lifecycle
 
 Blockchain
 
-Blockchain transaction layer / Base Sepolia
+Hash-linked decision ledger, optionally anchored on Base Sepolia. Settlement is simulated — no funds move.
 
 Database
 
-SQLite planned for persistent records
+SQLite — implemented; requests, payments and decisions persist across restarts
 
 APIs
 
@@ -335,9 +363,21 @@ Expanded provider and blockchain network support
 
 ⚠️ Current Limitations
 
-AEGIS is currently a project prototype and should not be treated as production financial infrastructure without additional authentication, secure wallet/key management, persistent storage, transaction-signing controls, security testing, monitoring, and compliance controls.
+AEGIS is a prototype. What is real and what is not:
 
-Real-value transactions should only be enabled after appropriate security and operational validation.
+REAL — policy and guardrail engine, decision flow and human escalation,
+credential custody, the hash-linked ledger and its verification, SQLite
+persistence, and on-chain anchoring when a testnet key is configured.
+
+SIMULATED — the x402 payment lifecycle. The state machine is real; settlement
+is stubbed and no funds move. PAY_TO_ADDRESS is the zero address, and settled
+payments are marked settlement_mode: "simulated".
+
+NOT BUILT — LLM risk scoring. riskLevel is currently derived from the policy
+decision, not independently assessed.
+
+Do not put real value through this without wallet/key management, transaction
+signing controls, security testing, monitoring and compliance review.
 
 📚 References
 

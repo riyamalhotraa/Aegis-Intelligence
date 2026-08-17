@@ -47,12 +47,16 @@ cp .env.example .env.local
 
 ```bash
 cd backend
-python -m pytest test_guard.py -v      # 23 tests
+python -m pytest -q        # 67 tests
 ```
 
-Covers the guard's security properties (credential custody, catalog-bound
-payees, plane separation, fail-closed) and every bug the enforcement-point work
-fixed. Each regression test fails against the previous implementation.
+| File | Covers |
+|---|---|
+| `test_guard.py` | guard security properties and every fixed bug |
+| `test_agent.py` | the agent, risk scoring, and the live credential-injected call |
+| `test_anchor.py` | anchoring: payload, signing, signature recovery, RPC contract |
+
+Each regression test fails against the previous implementation.
 
 ## The demo
 
@@ -81,6 +85,16 @@ Unset means that plane accepts anonymous callers. The agent-vs-operator
 *separation* holds either way — an agent credential is rejected on the control
 plane regardless. `GET /config` reports which state you're in.
 
+### Provider endpoints
+
+`AEGIS_ENDPOINT_<PROVIDER>` — the URL the guard calls for a provider. Without
+one, the guard authorizes and injects the credential but fulfils in simulation
+and reports `fulfilment: "simulated"`.
+
+```bash
+AEGIS_ENDPOINT_BLOOMBERG=https://api.example.com/v1/query
+```
+
 ### Provider credentials
 
 `AEGIS_CREDENTIAL_<PROVIDER>` — the secrets agents never receive. Provider name
@@ -101,6 +115,16 @@ AEGIS_CREDENTIAL_ALPHA_VANTAGE=...
 
 Needs a funded **Base Sepolia testnet** key. This writes a hash, not value —
 but use a throwaway key regardless, and never a mainnet one.
+
+Check it works before you rely on it — this never broadcasts:
+
+```bash
+cd backend && python anchor_preflight.py
+```
+
+Everything about anchoring is unit-tested offline. The one thing tests cannot
+prove is that the network accepts the transaction, which is exactly what
+preflight checks.
 
 Without a key, anchoring is skipped and reported as disabled. AEGIS never claims
 an anchor it did not write.
@@ -197,6 +221,7 @@ Check `GET /blockchain/anchors`. Anchoring needs a key, and only fires every
 **Everything reset after a restart**
 Ephemeral disk on a free host. See the Render caveat above.
 
-**Analytics numbers don't match transactions I just made**
-That screen is still fixture-backed. Set `VITE_HIDE_MOCK_SCREENS=true`, or see
+**A screen's numbers don't match transactions I just made**
+Analytics reads live data now. Incident Center, Audit Logs and Approval Center
+are still fixture-backed — set `VITE_HIDE_MOCK_SCREENS=true`, or see
 `MOCK_BACKED_ROUTES` in `frontend/src/constants/nav.ts`.

@@ -60,6 +60,26 @@ a human decided from what policy decided automatically.
 Deciding twice is safe. A request that's already final stays that way and
 doesn't create a second payment.
 
+## Risk, and where it comes from
+
+Alongside the pass/fail rules, every request gets a behavioural risk level
+computed from that agent's own history:
+
+| Signal | Meaning |
+|---|---|
+| First payment to a provider | this agent has never paid them before |
+| New category | first time this agent has spent here |
+| Spend deviation | far above this agent's normal amount |
+| Velocity | a burst of requests in a few minutes |
+| Recent refusals | this agent has just been blocked repeatedly |
+
+Each shows its own reason, so "medium risk" is never unexplained. Risk can
+raise a level but never lower it — a blocked payment is high risk however
+ordinary it looked.
+
+There is no AI in this scoring, deliberately. The same request scores the same
+way twice, and you can always see which signal fired.
+
 ## The five guardrails
 
 Found under **Guardrails**. Each can be armed or disarmed independently.
@@ -124,10 +144,12 @@ Worth knowing before you show this to anyone.
 | Human approval flow | Real |
 | Credential custody | Real |
 | Audit ledger and verification | Real |
-| On-chain anchoring | Real when configured, clearly reported when not |
+| Behavioural risk scoring | Real |
+| On-chain anchoring | Built and tested offline; the live broadcast needs a funded key — run `anchor_preflight.py` |
 | x402 payment lifecycle | **Simulated** — real state machine, stubbed settlement |
 | Money movement | **None.** No funds ever move |
-| Analytics / Incidents / Audit Logs / Approval Center | **Fixture data**, not live |
+| Analytics | Real — reads live decisions |
+| Incidents / Audit Logs / Approval Center | **Fixture data**, not live |
 
 Settled payments are labelled `settlement_mode: "simulated"` in the API for
 exactly this reason.

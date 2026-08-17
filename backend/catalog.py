@@ -130,6 +130,42 @@ def alternatives(category: str) -> List[dict]:
     return sorted(entries, key=lambda entry: float(entry.get("cost", 0)))
 
 
+def resolve_endpoint(provider: str, service: Optional[dict] = None) -> Optional[str]:
+    """
+    The URL the guard should call for a provider, if any.
+
+    Checked in order: an AEGIS_ENDPOINT_<PROVIDER> environment variable, then
+    an `endpoint` field on the catalog entry.
+
+    Keeping this env-driven means a real upstream can be wired in without
+    editing the catalog, and — importantly — that the live call path is
+    reachable in tests against a local stub rather than being dead code that
+    only runs in production.
+
+    Returns None when no endpoint is configured, in which case the guard
+    fulfils in simulation and says so.
+    """
+
+    import os
+
+    key = (
+        "AEGIS_ENDPOINT_"
+        + provider.strip().upper().replace("-", "_").replace(".", "_").replace(" ", "_")
+    )
+
+    from_env = os.getenv(key, "").strip()
+
+    if from_env:
+        return from_env
+
+    if service and service.get("endpoint"):
+        return service["endpoint"]
+
+    entry = find_provider(provider)
+
+    return entry.get("endpoint") if entry else None
+
+
 def describe_capabilities() -> Dict[str, List[dict]]:
     """
     What AEGIS can reach, for the graceful no-match response.

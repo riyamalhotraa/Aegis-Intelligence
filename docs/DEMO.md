@@ -23,7 +23,8 @@ more mature security position.
 ## Before you start
 
 - [ ] `cd backend && python demo_injection.py` — rehearse it once
-- [ ] `python -m pytest test_guard.py -q` — 23 passing, have it on a tab
+- [ ] `python -m pytest -q` — 67 passing, have it on a tab
+- [ ] `python anchor_preflight.py` if you're demoing anchoring — needs a funded key
 - [ ] Hit the deployed URL 5 minutes early so the dyno is awake
 - [ ] `VITE_HIDE_MOCK_SCREENS=true` in the demo build
 - [ ] Terminal font size up. Judges are 3 metres away
@@ -136,9 +137,11 @@ reason attached to every decision, and an escalation path for the middle. And
 the policy adapts from its own history instead of being reset by hand.
 
 **"Where's the AI?"**
-Two places: an agent generates the intents we govern, and the policy builder
-reads history to propose amendments. Enforcement is deliberately deterministic
-— you don't want an LLM deciding whether to release money.
+Two places: a real agent generates the intents we govern — with tool-choice
+reasoning on a Groq model when a key is set — and the policy builder reads
+history to propose amendments. Enforcement and risk scoring are deliberately
+deterministic: you don't want an LLM deciding whether to release money, and an
+operator needs to see exactly which signal fired.
 
 **"Doesn't sitting in the path add latency and a single point of failure?"**
 Yes, and that's the right trade for a control plane. It's on the payment path,
@@ -163,10 +166,11 @@ purpose.
 | Decision flow and escalation | Real |
 | Credential custody | Real |
 | Tamper-evident ledger | Real |
-| On-chain anchoring | Real when configured |
+| Behavioural risk scoring | Real — five signals, deterministic |
+| On-chain anchoring | Built and tested offline; live broadcast needs a funded key |
 | x402 lifecycle | Simulated — state machine real, settlement stubbed |
 | Value transfer | Not implemented |
-| Several dashboard screens | Fixture data |
+| Incidents / Audit Logs / Approvals | Fixture data (Analytics is live) |
 
 > "The governance engine, the decision flow and the ledger all run. Settlement
 > is simulated — we model the x402 lifecycle but don't move funds, because the
@@ -178,7 +182,9 @@ purpose.
 ## Don't
 
 - Don't open the dashboard first
-- Don't click into Analytics, Incidents, Audit Logs or Approval Center — still fixtures
+- Don't click into Incidents, Audit Logs or Approval Center — still fixtures
+  (Analytics is live now and safe to open)
 - Don't say "immutable." Single-writer append-only files aren't
-- Don't claim LLM risk scoring. `riskLevel` is derived from the decision
+- Don't call the risk scoring AI — it's five deterministic behavioural signals,
+  and saying so is the stronger answer anyway
 - Don't demo all twelve screens. Three real ones beat twelve half-real ones

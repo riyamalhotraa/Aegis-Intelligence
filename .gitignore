@@ -35,3 +35,8 @@ Thumbs.db
 backend/aegis.db
 backend/aegis.db-journal
 *.db-journal
+
+# Build artifacts (generated from the .ts sources)
+frontend/vite.config.js
+frontend/vite.config.d.ts
+*.tsbuildinfo

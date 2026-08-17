@@ -32,7 +32,16 @@ from identity import require_agent, require_operator  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
-def clean_state():
+def clean_state(monkeypatch):
+    # config reads the environment once at import time, and whichever test
+    # module imports it first wins. Setting these on the module directly makes
+    # the plane tests independent of collection order rather than of whoever
+    # happened to import config first.
+    monkeypatch.setattr(config, "AGENT_TOKEN", "test-agent-token")
+    monkeypatch.setattr(config, "OPERATOR_TOKEN", "test-operator-token")
+    monkeypatch.setattr(config, "CONTROL_PLANE_LOCKED", True)
+    monkeypatch.setattr(config, "DATA_PLANE_LOCKED", True)
+
     store.reset()
 
     ledger = Path(config.LEDGER_FILE)

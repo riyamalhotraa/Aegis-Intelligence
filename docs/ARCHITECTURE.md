@@ -54,6 +54,48 @@ If the policy engine raises, `guard.evaluate()` returns `blocked`. A guard
 that allows payments when its own evaluation crashes is not a guard.
 `AEGIS_GUARD_FAIL_OPEN=true` exists but should stay off.
 
+
+## Risk scoring
+
+`riskLevel` used to be a static lookup from the decision — approved→low,
+review→medium, blocked→high. That is a relabeling, not an assessment.
+
+`risk.py` computes it from the agent's own history, with five signals:
+
+| Signal | Fires when |
+|---|---|
+| `first_time_provider` | the agent has never paid this provider |
+| `novel_category` | first spend in this category from this agent |
+| `spend_deviation` | amount is ≥3× the agent's average |
+| `velocity` | ≥5 requests in 10 minutes |
+| `recent_refusals` | ≥2 refusals in 30 minutes |
+
+Each carries a score and a human-readable reason; the total maps to
+low/medium/high.
+
+**Deliberately not an LLM.** Enforcement must be reproducible: the same request
+must score the same way twice, and an operator must see exactly which signal
+fired. `risk.combine()` reconciles the score with the policy decision — risk
+can raise a level but never lower it below what the decision implies, so a
+blocked payment is high risk however ordinary it looked.
+
+## The agent
+
+`agent.py` is a real agent loop: it reads context, decides what it wants, and
+calls a tool. The tool is the guard, and it is the only one — the agent holds
+no credentials and has no other route to money.
+
+Two brains. `LlmBrain` uses LangChain + Groq for genuine tool-choice reasoning
+when `GROQ_API_KEY` is set. `ScriptedBrain` is a deterministic stand-in that
+follows instructions found in its context, including injected ones.
+
+The scripted brain is not a shortcut around honesty: a compromised agent's
+*reasoning* is not what the demo is about — what happens when it tries to spend
+is, and that path is identical for both. `Agent.brain_name()` reports which one
+ran.
+
+`UnguardedAgent` is the control case: the same brain, holding its own wallet.
+
 ## Control plane / data plane
 
 The question that would otherwise be devastating in review:
@@ -98,6 +140,19 @@ Anchoring is optional and best-effort: a slow testnet must never block a
 payment decision. With no key configured it is skipped and reported as
 disabled. **We never claim an anchor we did not write.**
 
+
+### What is and is not proven about anchoring
+
+Everything except the network broadcast is unit-tested offline in
+`test_anchor.py` with a real throwaway key and a fake JSON-RPC endpoint:
+payload encoding, gas estimation, transaction construction, signing,
+**signature recovery** (the check a node performs), the RPC contract, nonce and
+gas-price handling, and failure isolation.
+
+What is *not* proven is that Base Sepolia accepts the transaction — that needs
+a funded account. Run `python anchor_preflight.py` before relying on it; it
+derives the address and checks the balance without broadcasting.
+
 Deliberately not implemented: moving real funds. The problem is the guard, not
 the rail, and a live value transfer is one more thing that can fail during a
 demo.
@@ -110,7 +165,8 @@ demo.
 | Decision flow and escalation | Real — end to end including human approval |
 | Credential custody | Real |
 | Hash-linked ledger | Real — tamper-evident, verified on read |
-| On-chain anchoring | Real when `AEGIS_CHAIN_PRIVATE_KEY` is set, else reported as off |
+| Behavioural risk scoring | Real — five signals, no LLM |
+| On-chain anchoring | Built and unit-tested offline; **the network broadcast itself has not been run** (needs a funded key) |
 | x402 payment lifecycle | **Simulated** — the state machine is real, settlement is stubbed |
 | Value transfer | **Not implemented** — `PAY_TO_ADDRESS` is the zero address |
 
@@ -122,6 +178,8 @@ The API reports this itself: settled payments carry
 | File | Role |
 |---|---|
 | `guard.py` | The enforcement point. The one path money can take. |
+| `agent.py` | A real agent loop whose only spend route is the guard. |
+| `risk.py` | Behavioural risk scoring. Deterministic, explainable. |
 | `credentials.py` | Secret custody. Read in one place, never serialized. |
 | `identity.py` | Control plane / data plane separation. |
 | `catalog.py` | Service catalog, cost-aware selection, payee boundary. |
@@ -130,6 +188,7 @@ The API reports this itself: settled payments carry
 | `policy_builder.py` | LLM proposes amendments. Never applies them. |
 | `blockchain.py` | Hash-linked ledger and verification. |
 | `anchor.py` | Base Sepolia anchoring. Optional, best-effort. |
+| `anchor_preflight.py` | Checks anchoring works without spending anything. |
 | `store.py` | SQLite persistence. |
 | `request_history.py` | Request records and derived spend/frequency figures. |
 | `seed.py` | Historical demo data, dated to previous days. |

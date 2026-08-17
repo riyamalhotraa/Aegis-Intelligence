@@ -21,17 +21,19 @@ it happen.
     pip install -r requirements.txt
     python demo_injection.py
 
-Runs the same prompt-injection attack four times — against an agent holding
-its own wallet, against the same agent behind AEGIS, against a legitimate
-provider, and finally against the guard itself. No server needed.
+Runs a real agent through the same prompt-injection attack four times —
+holding its own wallet, behind AEGIS, against a legitimate provider, and
+finally attacking the guard itself. No server and no API key needed.
 
 ## 🧪 Tests
 
     cd backend
     python -m pytest test_guard.py -v
 
-23 tests covering the guard's security properties and every bug this work
-fixed. Each regression test fails against the previous implementation.
+67 tests: the guard's security properties, the agent, behavioural risk
+scoring, the live credential-injected call path, on-chain anchoring
+(signing and signature recovery included), and every bug this work fixed.
+Each regression test fails against the previous implementation.
 
 
 🚨 Problem
@@ -86,31 +88,31 @@ The repository includes screenshots of the main AEGIS interfaces.
 
 ⛓️ Blockchain Command Center
 
-
+![Blockchain Command Center](screenshots/blockchain.png)
 
 🎛️ Command Center
 
-
+![Command Center](screenshots/command_center.png)
 
 🛡️ Guardrails
 
-
+![Guardrails](screenshots/guardrails.png)
 
 📋 Policy Builder
 
-
+![Policy Builder](screenshots/policy%20builder.png)
 
 💳 Payment Requests
 
-
+![Payment Requests](screenshots/requests.png)
 
 🔎 Transaction Details
 
-
+![Transaction Details](screenshots/transaction.png)
 
 👤 Human Approval
 
-
+![Human Approval](screenshots/user_approval.png)
 
 🏗️ Architecture
 
@@ -199,6 +201,8 @@ Render
 Aegis/
 ├── backend/
 │   ├── guard.py              # THE ENFORCEMENT POINT — one path money can take
+│   ├── agent.py              # a real agent whose only spend route is the guard
+│   ├── risk.py               # behavioural risk scoring (no LLM)
 │   ├── credentials.py        # secret custody; agents never hold a key
 │   ├── identity.py           # control plane / data plane separation
 │   ├── catalog.py            # service catalog + payee boundary
@@ -207,6 +211,7 @@ Aegis/
 │   ├── policy_builder.py     # LLM proposes amendments; never applies them
 │   ├── blockchain.py         # hash-linked decision ledger
 │   ├── anchor.py             # Base Sepolia anchoring (optional)
+│   ├── anchor_preflight.py   # verify anchoring works, spend nothing
 │   ├── store.py              # SQLite persistence
 │   ├── request_history.py    # records + derived spend/frequency
 │   ├── seed.py               # historical demo data
@@ -214,7 +219,7 @@ Aegis/
 │   ├── selector.py           # legacy entry point -> guard
 │   ├── main.py               # FastAPI routes
 │   ├── demo_injection.py     # ▶ the demo — runs without a server
-│   ├── test_guard.py         # 23 tests
+│   ├── test_guard.py / test_agent.py / test_anchor.py   # 67 tests
 │   ├── api_catalog.json / keyword_map.json / blockchain.json
 │   ├── requirements.txt / .env.example
 │   └── x402/                 # payment lifecycle (simulated settlement)

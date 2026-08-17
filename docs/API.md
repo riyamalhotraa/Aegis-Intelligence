@@ -109,6 +109,12 @@ entering the system.
 has decided, so the audit trail distinguishes the two. `execution.fulfilment` is
 `simulated`, `live`, `unavailable` or `failed`.
 
+Every response also carries behavioural risk: `riskScore` (0–100),
+`riskSummary`, and `riskSignals` — each with a `signal` name, `score` and
+`message`. Signals are `first_time_provider`, `novel_category`,
+`spend_deviation`, `velocity` and `recent_refusals`. Risk annotates a decision;
+it never makes one, and never lowers a level below what the decision implies.
+
 **200 — escalated to a human.** `status: "pending"`, `allowed: false`. Resolve
 via `POST /requests/{request_id}/decision`.
 
@@ -201,6 +207,13 @@ Reports the first tampered block.
 Anchoring status and every anchor written this process lifetime, each with an
 `explorerUrl`.
 
+### `GET /blockchain/anchors/preflight`
+Checks anchoring is usable without spending anything — derives the address from
+the key and queries balance, gas price and nonce. Never broadcasts.
+```json
+{ "ready": false, "reason": "No AEGIS_CHAIN_PRIVATE_KEY configured." }
+```
+
 ### `GET /blockchain/{block_number}`
 One block. **404** when absent.
 
@@ -223,6 +236,9 @@ Each suggestion carries `suggestion_type`, `title`, `current_value`,
 
 ### `POST /policies/apply` 🔒 operator
 Apply an operator-approved suggestion. Send the suggestion object back.
+
+Requires `suggestion_type`; extra fields are accepted so the whole suggestion
+can be round-tripped. A body missing it returns **422**.
 
 ### `GET /guardrails`
 All five guardrails with `enabled` state and current threshold.

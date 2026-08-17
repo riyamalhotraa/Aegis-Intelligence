@@ -12,11 +12,11 @@ control plane even when that plane is otherwise open, so a compromised agent
 can never widen its own authority.
 """
 
-from typing import Optional
+from typing import Optional, Union
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 import anchor
 import config
@@ -99,6 +99,22 @@ class PaymentRequestCreate(BaseModel):
     provider: str
     api: str
     amount: float
+
+
+class PolicySuggestionPayload(BaseModel):
+    """
+    An operator-approved policy suggestion.
+
+    Previously this route took a bare `dict`, so a malformed body reached the
+    store logic unvalidated. Extra fields are still accepted — the frontend
+    round-trips the whole suggestion object, including display-only fields —
+    but the two the store actually reads are now typed.
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    suggestion_type: str
+    suggested_value: Optional[Union[str, float, int]] = None
 
 
 # ============================================================================
@@ -280,6 +296,19 @@ def blockchain_anchors():
     return {"status": anchor.status(), "anchors": anchor.get_anchors()}
 
 
+@app.get("/blockchain/anchors/preflight")
+def blockchain_anchor_preflight():
+    """
+    Check anchoring is usable without spending anything.
+
+    Reads the key, derives the address, and queries balance, gas price and
+    nonce. Never broadcasts. Run before a demo rather than discovering at
+    block 5 that the account is unfunded.
+    """
+
+    return anchor.preflight()
+
+
 @app.get("/blockchain/{block_number}")
 def blockchain_block(block_number: int):
     block = get_blockchain_record(block_number)
@@ -308,7 +337,7 @@ def policy_suggestions():
 
 @app.post("/policies/apply")
 def apply_policy(
-    suggestion: dict,
+    suggestion: PolicySuggestionPayload,
     principal: Principal = Depends(require_operator),
 ):
     """
@@ -316,7 +345,7 @@ def apply_policy(
     """
 
     try:
-        return apply_policy_suggestion(suggestion)
+        return apply_policy_suggestion(suggestion.model_dump())
 
     except ValueError as exc:
         return {"success": False, "message": str(exc)}

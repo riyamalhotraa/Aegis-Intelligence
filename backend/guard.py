@@ -28,6 +28,7 @@ from typing import Dict, List, Optional
 import catalog
 import config
 import credentials
+import risk
 from blockchain import create_blockchain_record
 from guardrails import evaluate_payment
 from request_history import add_request
@@ -179,7 +180,7 @@ def _execute_outbound(service: dict, task: str) -> dict:
     """
 
     provider = service["provider"]
-    endpoint = service.get("endpoint")
+    endpoint = catalog.resolve_endpoint(provider, service)
 
     if not endpoint:
         return {
@@ -255,6 +256,17 @@ def spend(
     verdict = evaluate(provider_name, amount)
     decision = verdict["decision"]
 
+    # Behavioural risk is assessed independently of the policy decision, then
+    # reconciled: risk can raise the level but never lower it below what the
+    # decision implies. Computed before the record is stored so the agent's
+    # own history does not include the request being scored.
+    assessment = risk.assess(
+        agent_id=agent_id,
+        provider=provider_name,
+        amount=amount,
+        category=service.get("category"),
+    )
+
     status = {
         APPROVED: "approved",
         HUMAN_REVIEW: "pending",
@@ -269,7 +281,10 @@ def spend(
         "category": service.get("category"),
         "agentId": agent_id,
         "decision": decision,
-        "riskLevel": verdict["riskLevel"],
+        "riskLevel": risk.combine(decision, assessment),
+        "riskScore": assessment["score"],
+        "riskSignals": assessment["signals"],
+        "riskSummary": assessment["summary"],
         "reason": verdict["reason"],
         "checks": verdict["checks"],
         "status": status,

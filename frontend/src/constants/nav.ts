@@ -24,7 +24,7 @@ export interface NavGroup {
  * Set VITE_HIDE_MOCK_SCREENS=true to drop them from the navigation.
  */
 export const MOCK_BACKED_ROUTES: string[] = [
-  ROUTES.analytics,
+  // Analytics now reads /requests and is no longer listed here.
   ROUTES.incidents,
   ROUTES.auditLogs,
   ROUTES.approvals,

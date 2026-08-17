@@ -195,35 +195,50 @@ Render
 
 📁 Project Structure
 
+```
 Aegis/
 ├── backend/
-│   ├── main.py
-│   ├── blockchain.py
-│   ├── blockchain.json
-│   ├── guardrails.py
-│   ├── policy_builder.py
-│   ├── policy_store.py
-│   ├── request_history.py
-│   ├── selector.py
-│   ├── api_catalog.json
-│   ├── keyword_map.json
-│   ├── requirements.txt
-│   └── x402/
-│       ├── __init__.py
-│       ├── payment_models.py
-│       └── payment_service.py
+│   ├── guard.py              # THE ENFORCEMENT POINT — one path money can take
+│   ├── credentials.py        # secret custody; agents never hold a key
+│   ├── identity.py           # control plane / data plane separation
+│   ├── catalog.py            # service catalog + payee boundary
+│   ├── guardrails.py         # the policy engine (deterministic)
+│   ├── policy_store.py       # active policy configuration
+│   ├── policy_builder.py     # LLM proposes amendments; never applies them
+│   ├── blockchain.py         # hash-linked decision ledger
+│   ├── anchor.py             # Base Sepolia anchoring (optional)
+│   ├── store.py              # SQLite persistence
+│   ├── request_history.py    # records + derived spend/frequency
+│   ├── seed.py               # historical demo data
+│   ├── config.py             # env-driven configuration
+│   ├── selector.py           # legacy entry point -> guard
+│   ├── main.py               # FastAPI routes
+│   ├── demo_injection.py     # ▶ the demo — runs without a server
+│   ├── test_guard.py         # 23 tests
+│   ├── api_catalog.json / keyword_map.json / blockchain.json
+│   ├── requirements.txt / .env.example
+│   └── x402/                 # payment lifecycle (simulated settlement)
 ├── frontend/
-│   └── src/
-├── screenshots/
-│   ├── blockchain.png
-│   ├── command center.png
-│   ├── guardrails.png
-│   ├── policy builder.png
-│   ├── requests.png
-│   ├── transaction.png
-│   └── user_approval.png
-├── README.md
-└── .gitignore
+│   ├── src/config.ts         # single source for API URL + credentials
+│   └── src/…                 # pages, services, components
+├── docs/
+│   ├── ARCHITECTURE.md       # how the guard works
+│   ├── API.md                # endpoint reference
+│   ├── SETUP.md              # install, config, deployment
+│   ├── OPERATING.md          # using the dashboard
+│   └── DEMO.md               # demo runbook
+└── screenshots/
+```
+
+## 📚 Documentation
+
+| Doc | For |
+|---|---|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | How enforcement works, and why it's a guard rather than a dashboard |
+| [API.md](docs/API.md) | Every endpoint, auth, request/response examples |
+| [SETUP.md](docs/SETUP.md) | Install, configure, deploy, troubleshoot |
+| [OPERATING.md](docs/OPERATING.md) | Operator guide — reading decisions, approving requests, guardrails |
+| [DEMO.md](docs/DEMO.md) | Demo runbook and anticipated questions |
 
 💳 x402 Integration
 
@@ -233,43 +248,36 @@ AEGIS uses an x402-style payment lifecycle within its governance and transaction
 
 Payment Required → Authorized → Verified → Settling → Settled
 
-🔗 Planned x402 Gateway
+🔗 The guard (formerly "planned x402 gateway")
 
-A dedicated gateway is planned to sit between AI agents and payment providers:
+Built. AEGIS sits between agents and providers rather than beside them:
 
-AI Agent
-   ↓
-AEGIS x402 Gateway
-   ↓
+```
+AI Agent  (holds no credentials)
+   ↓  submits an intent
+AEGIS GUARD
+   ↓  frequency → provider → budget → amount
 Policy + Guardrails
+   ↓  approve · escalate · block
+Credential injection  (the agent never sees the key)
    ↓
-Payment Verification
+Payment lifecycle → Settlement (simulated)
    ↓
-Settlement
-   ↓
-Blockchain
+Tamper-evident ledger → optional Base Sepolia anchor
+```
 
-The gateway will validate transaction context and enforce AEGIS policies before approved payments proceed toward settlement.
+The agent cannot pay a provider directly, so the guard cannot be bypassed by an
+agent that simply declines to ask. See
+[ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-🗄️ Database Roadmap
+🗄️ Persistence
 
-A planned SQLite database will provide persistent storage for:
+Implemented. SQLite (`store.py`) persists payment requests, transactions,
+payment records and decisions across restarts. The ledger lives in
+`blockchain.json` and is verified on every read.
 
-Payment requests
-
-Transactions
-
-Blockchain records
-
-Policy configurations
-
-Guardrail decisions
-
-Approval decisions
-
-Audit records
-
-This will enable historical querying, persistence across restarts, and stronger analytics.
+Note: free hosting tiers use ephemeral disks, so a recycled instance still
+resets state — see [SETUP.md](docs/SETUP.md).
 
 🔄 Governance Scenarios
 

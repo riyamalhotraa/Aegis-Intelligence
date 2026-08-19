@@ -244,6 +244,7 @@ Aegis/
 | [SETUP.md](docs/SETUP.md) | Install, configure, deploy, troubleshoot |
 | [OPERATING.md](docs/OPERATING.md) | Operator guide — reading decisions, approving requests, guardrails |
 | [DEMO.md](docs/DEMO.md) | Demo runbook and anticipated questions |
+| [deck/](docs/deck/) | The pitch deck — open `docs/deck/index.html` |
 
 💳 x402 Integration
 

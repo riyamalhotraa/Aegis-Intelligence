@@ -2,6 +2,9 @@
 
 Problem statement 2.1 — Agent Spend Policy Guard.
 
+> **The slides:** [`deck/index.html`](deck/index.html) — 15 slides, keyboard
+> driven, works offline. This file is what you *say* over them.
+
 ## The one rule
 
 **Open with the disaster, not the dashboard.**

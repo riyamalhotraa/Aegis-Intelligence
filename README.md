@@ -33,7 +33,15 @@ finally attacking the guard itself. No server and no API key needed.
 67 tests: the guard's security properties, the agent, behavioural risk
 scoring, the live credential-injected call path, on-chain anchoring
 (signing and signature recovery included), and every bug this work fixed.
-Each regression test fails against the previous implementation.
+
+## 🎤 The pitch deck
+
+Open [`docs/deck/index.html`](docs/deck/index.html) in any browser and press
+<kbd>F11</kbd>. Fifteen slides, keyboard driven (<kbd>←</kbd> <kbd>→</kbd>),
+no build step and no network — it works on conference wifi because it never
+touches it.
+
+What to say over each slide is in [docs/DEMO.md](docs/DEMO.md).
 
 
 🚨 Problem
@@ -54,33 +62,59 @@ Limited visibility into agent-driven financial activity
 
 💡 Solution
 
-AEGIS evaluates every payment request against configurable financial and risk policies before it reaches transaction execution.
+Agents hold no payment credentials. They submit an intent; AEGIS evaluates it and,
+only if policy allows, makes the paid call itself using a secret the agent has
+never seen.
 
-AI Agent → Payment Request → Policy Evaluation → Guardrails
-                    ↓
-       Approve / Human Approval / Reject
-                    ↓
-             Payment Execution
-                    ↓
-              Settlement
-                    ↓
-         Transaction & Audit Records
+```
+AI Agent  (holds no credentials)
+    ↓  submits an intent — a task, or a provider from the catalog
+AEGIS GUARD
+    ↓  frequency → provider allow list → daily budget → amount
+Policy engine + behavioural risk scoring
+    ↓
+APPROVE  ·  ESCALATE TO HUMAN  ·  BLOCK
+    ↓  (approved only)
+Credential injection → paid call → x402 lifecycle
+    ↓
+Tamper-evident decision ledger  →  optional Base Sepolia anchor
+```
+
+Refusing is the default and needs no cooperation from the agent — it has
+nothing to pay with.
 
 ✨ Key Features
 
-🤖 AI Agent Governance — Monitor and control payment activity initiated by autonomous agents.
+🔐 **Credential custody** — provider secrets live in the guard, read in exactly one
+place, and never reach a response, a log line, or the ledger.
 
-💳 Payment Request Management — View agent, provider, amount, category, risk level, and status.
+🚧 **Catalog-bound payees** — an agent names a task or a known provider. It cannot
+supply a URL, a wallet address, or an amount, so injected payment instructions
+have nowhere to enter.
 
-🛡️ Policy Builder & Guardrails — Spending limits, provider allowlists, frequency limits, category limits, daily budgets, and risk rules.
+🛡️ **Five guardrails** — provider allow list, autonomous approval limit, human
+review threshold, daily budget, request frequency. Each can be armed or disarmed
+independently.
 
-👤 Human-in-the-Loop Approvals — Route legitimate but higher-risk transactions for human authorization.
+⚡ **Three-way decisions** — approve, escalate to a human, or block. Every rule
+reports its own verdict and the numbers it saw.
 
-⚡ Automated Decisions — Approved, Human Approval Required, or Rejected.
+📊 **Behavioural risk scoring** — five deterministic signals from the agent's own
+history: first-time provider, novel category, spend deviation, velocity, recent
+refusals. No LLM in the scoring path.
 
-⛓️ Blockchain Monitoring — Track transaction IDs, hashes, network details, settlement status, and timestamps.
+🔀 **Control plane / data plane split** — policy changes need an operator
+credential. An agent credential is rejected there by construction, so a
+compromised agent cannot disarm its own guard.
 
-📊 Analytics & Auditability — Monitor payments, decisions, incidents, transactions, and system activity.
+🤖 **Policy Builder** — reads the system's own decision history and proposes
+amendments with evidence counts and confidence. Nothing applies itself.
+
+⛓️ **Tamper-evident ledger** — hash-linked decision records, verified on read,
+optionally anchored on Base Sepolia.
+
+👤 **Human-in-the-loop approvals** — idempotent; deciding twice never creates a
+second payment.
 
 📸 Project Screenshots
 
@@ -116,38 +150,42 @@ The repository includes screenshots of the main AEGIS interfaces.
 
 🏗️ Architecture
 
-                         ┌─────────────────┐
-                         │    AI AGENTS    │
-                         └────────┬────────┘
-                                  ↓
-                         ┌─────────────────┐
-                         │ PAYMENT REQUEST │
-                         └────────┬────────┘
-                                  ↓
-                 ┌────────────────────────────────┐
-                 │        AEGIS GOVERNANCE        │
-                 │ Policy Engine • Guardrails     │
-                 │ Risk Evaluation • Approval     │
-                 └───────────────┬────────────────┘
-                                 ↓
-                    ┌────────────┼────────────┐
-                    ↓            ↓            ↓
-                 APPROVE      REVIEW        REJECT
-                    │            │
-                    └──────┬─────┘
-                           ↓
-                  ┌─────────────────┐
-                  │ PAYMENT EXECUTION│
-                  └────────┬────────┘
-                           ↓
-                  ┌─────────────────┐
-                  │ SETTLEMENT /    │
-                  │ BLOCKCHAIN      │
-                  └────────┬────────┘
-                           ↓
-                  ┌─────────────────┐
-                  │ AUDIT & ANALYTICS│
-                  └─────────────────┘
+```
+        ┌──────────────────────┐
+        │      AI AGENT        │   holds no credentials
+        └──────────┬───────────┘
+                   │  spend intent  (task or known provider)
+                   ↓
+   ╔═══════════════════════════════════╗
+   ║           AEGIS GUARD             ║   the only path money can take
+   ║                                   ║
+   ║  resolve intent → catalog only    ║
+   ║  policy engine  → 5 guardrails    ║
+   ║  risk scoring   → 5 signals       ║
+   ║  fail closed    → errors = no     ║
+   ╚═══════════════┬═══════════════════╝
+                   │
+     ┌─────────────┼─────────────┐
+     ↓             ↓             ↓
+  APPROVE      ESCALATE        BLOCK
+     │             │             │
+     │             ↓             │
+     │      human decision       │
+     │        (operator)         │
+     └──────┬──────┘             │
+            ↓                    │
+   credential injection          │
+   paid call + x402 lifecycle    │
+            │                    │
+            └────────┬───────────┘
+                     ↓
+        tamper-evident ledger  →  Base Sepolia anchor (optional)
+
+
+   CONTROL PLANE  ── operator credential ──▶  policy store
+        │                                          │ reads
+        └──────────────  agents cannot reach  ─────┘
+```
 
 🧰 Technology Stack
 
@@ -231,7 +269,8 @@ Aegis/
 │   ├── API.md                # endpoint reference
 │   ├── SETUP.md              # install, config, deployment
 │   ├── OPERATING.md          # using the dashboard
-│   └── DEMO.md               # demo runbook
+│   ├── DEMO.md               # demo runbook — what you say
+│   └── deck/index.html       # ▶ the pitch deck — what you show
 └── screenshots/
 ```
 
@@ -244,7 +283,19 @@ Aegis/
 | [SETUP.md](docs/SETUP.md) | Install, configure, deploy, troubleshoot |
 | [OPERATING.md](docs/OPERATING.md) | Operator guide — reading decisions, approving requests, guardrails |
 | [DEMO.md](docs/DEMO.md) | Demo runbook and anticipated questions |
-| [deck/](docs/deck/) | The pitch deck — open `docs/deck/index.html` |
+| [deck/index.html](docs/deck/index.html) | **The pitch deck** — 15 slides, keyboard driven, opens offline in any browser |
+
+## 🤖 Working on this with a coding agent
+
+[`AGENTS.md`](AGENTS.md) is the context file: what AEGIS is, the invariants that
+must not be broken, the module map, how to run and test, current real-vs-simulated
+state, and what to do next. Clone the repo, open any agent, and it has the
+full picture.
+
+`CLAUDE.md` is a byte-identical copy for Claude Code, and Cursor, Copilot and
+Windsurf read pointer files that defer to `AGENTS.md` — so there is exactly one
+place to edit. `scripts/sync_agent_docs.py` keeps them identical and CI fails if
+they drift. See [scripts/README.md](scripts/README.md).
 
 💳 x402 Integration
 
@@ -339,59 +390,71 @@ The API catalog contains providers, estimated request costs, categories, and des
 
 ☁️ Deployment
 
-AEGIS is deployed as separate frontend and backend services on Render.
-
-Backend
-
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
-
-Frontend
-
-cd frontend
-npm install
-npm run dev
-
-The production frontend and backend communicate through REST APIs.
+Frontend and backend deploy as two services on Render. Root directories,
+build and start commands, the full environment-variable list and the
+free-tier ephemeral-disk caveat are in
+[docs/SETUP.md](docs/SETUP.md#deploying-to-render).
 
 🔐 Environment Variables
 
-Never commit API keys, wallet credentials, or other secrets to GitHub.
+**Everything is optional — AEGIS starts with no configuration at all.** A
+missing `GROQ_API_KEY` disables policy suggestions and nothing else.
 
-Use .env locally and configure production secrets through the deployment platform.
+Annotated templates: [`backend/.env.example`](backend/.env.example) and
+[`frontend/.env.example`](frontend/.env.example). Full reference in
+[docs/SETUP.md](docs/SETUP.md#configuration-reference).
+
+Set `AEGIS_OPERATOR_TOKEN` anywhere the URL is publicly reachable — without it
+the control plane accepts anonymous callers. `GET /config` reports which state
+a deployment is actually in.
+
+Never commit API keys, wallet credentials or other secrets. `.env` is
+gitignored; `.env.example` is the template.
 
 🚀 Future Scope
 
-Dedicated x402 Gateway for pre-settlement transaction governance
+Already built and no longer "planned": the guard itself, SQLite persistence,
+behavioural risk scoring, and ledger anchoring. What is genuinely still ahead:
 
-Persistent SQLite database for transaction and blockchain history
+**Live x402 settlement** — the lifecycle is modelled; moving real funds needs
+wallet and key management, signing controls and testing.
 
-Production on-chain x402 settlement
+**Broadcast-verified anchoring** — the signing path is unit-tested offline; a
+funded Base Sepolia key is needed to prove the network accepts it.
 
-Advanced AI risk and anomaly detection
+**Per-agent policy** — limits are global today. Records already carry an
+`agentId`, so scoping policy per agent is a natural next step.
 
-Real-time alerts
+**Transparent proxy mode** — agents currently call `/guard/spend`. Intercepting
+an agent's HTTP egress without any code change is the stronger position.
 
-Expanded provider and blockchain network support
+**MCP tool-call governance** — a payment is one kind of agent action; a tool
+call is the same interception shape.
+
+**Live data for the remaining screens** — Incident Center, Audit Logs and
+Approval Center still read fixtures.
 
 ⚠️ Current Limitations
 
-AEGIS is a prototype. What is real and what is not:
+AEGIS is a prototype. Precisely what is real and what is not:
 
-REAL — policy and guardrail engine, decision flow and human escalation,
-credential custody, the hash-linked ledger and its verification, SQLite
-persistence, and on-chain anchoring when a testnet key is configured.
+| Component | Status |
+|---|---|
+| Policy and guardrail engine | **Real** — deterministic, explainable per rule |
+| Decision flow and human escalation | **Real** — end to end |
+| Credential custody | **Real** — agents never receive a secret |
+| Behavioural risk scoring | **Real** — five signals, no LLM |
+| Control plane / data plane split | **Real** — enforced in code |
+| SQLite persistence | **Real** |
+| Hash-linked ledger and verification | **Real** — 25 blocks committed |
+| On-chain anchoring | **Built, tested offline.** Signing and signature recovery are unit-tested; the live broadcast needs a funded Base Sepolia key. Run `python anchor_preflight.py` to check |
+| x402 payment lifecycle | **Simulated** — the state machine is real, settlement is stubbed. Settled payments are marked `settlement_mode: "simulated"` |
+| Value transfer | **Not implemented** — `PAY_TO_ADDRESS` is the zero address. No funds move |
+| Incident Center / Audit Logs / Approval Center | **Fixture data.** Set `VITE_HIDE_MOCK_SCREENS=true` to hide them |
 
-SIMULATED — the x402 payment lifecycle. The state machine is real; settlement
-is stubbed and no funds move. PAY_TO_ADDRESS is the zero address, and settled
-payments are marked settlement_mode: "simulated".
-
-NOT BUILT — LLM risk scoring. riskLevel is currently derived from the policy
-decision, not independently assessed.
-
-Do not put real value through this without wallet/key management, transaction
-signing controls, security testing, monitoring and compliance review.
+Do not put real value through this without wallet and key management,
+transaction signing controls, security testing, monitoring and compliance
+review.
 
 📚 References
 

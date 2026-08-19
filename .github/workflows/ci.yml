@@ -68,6 +68,22 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+  agent-docs:
+    name: Agent context in sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: AGENTS.md and CLAUDE.md must be identical
+        # AGENTS.md is canonical; CLAUDE.md is a copy. This stops the two
+        # sets of agent instructions from drifting apart.
+        run: python scripts/sync_agent_docs.py --check
+
   ledger:
     name: Ledger integrity
     runs-on: ubuntu-latest

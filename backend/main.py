@@ -5,12 +5,23 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from uuid import uuid4
 from security import inspect_payment_request
 from security_events import (
     record_security_event,
     get_security_events,
     get_security_stats,
 )
+from typing import List
+from policy_store import (
+    get_policy_config,
+    toggle_guardrail,
+    apply_policy_suggestion,
+    update_provider_allow_list,
+)
+
+class ProviderAllowListRequest(BaseModel):
+    providers: List[str]
 
 # ============================================================================
 # AEGIS SERVICES
@@ -132,6 +143,16 @@ def select(request: PromptRequest):
     security_result = inspect_payment_request({
         "task": request.message,
     })
+
+    record_security_event(
+        event_type="task_security_check",
+        request_id=str(uuid4()),
+        result=security_result["status"],
+        details={
+            "sensitive_fields": security_result["sensitive_fields"],
+            "detected_types": security_result["detected_types"],
+        },
+    )
 
     # ---------------------------------------------------------
     # BLOCKED
@@ -1025,3 +1046,22 @@ def get_payment_details(
         "payment": payment,
     }
 
+@app.post("/policies/provider-allow-list")
+def update_provider_policy(body: ProviderAllowListRequest):
+
+    try:
+        config = update_provider_allow_list(
+            body.providers
+        )
+
+        return {
+            "success": True,
+            "message": "Provider allow list updated.",
+            "config": config,
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )

@@ -403,5 +403,20 @@
     "timestamp": "2026-08-21T00:31:43.440543+00:00",
     "previousHash": "da67cac89094feff4764f10cc2ea197261f54fb66a9e7fe25561c62d90ed806f",
     "hash": "9ba63fb783553da39fdfe7b8c537e38eb62b7ce1aa6d16e98063d38fe18f9438"
+  },
+  {
+    "blockNumber": 28,
+    "requestId": "73fd0ec2-49b2-45de-bce5-9f8392820366",
+    "task": "purchase $50 of alpha vantage research api access.",
+    "provider": "Bloomberg",
+    "amount": 50,
+    "category": "research",
+    "decision": "approved",
+    "decisionType": "approved",
+    "decisionBy": "Guardrails",
+    "reason": "Within auto approval limit.",
+    "timestamp": "2026-08-21T10:44:40.267323+00:00",
+    "previousHash": "9ba63fb783553da39fdfe7b8c537e38eb62b7ce1aa6d16e98063d38fe18f9438",
+    "hash": "04248e480f205efba63f60be8028e4175c3718861e3c120bc6a2986507fc99ca"
   }
 ]

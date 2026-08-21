@@ -63,6 +63,11 @@ export const navGroups: NavGroup[] = [
         icon: 'shield',
       },
       {
+        label: 'Security & Privacy',
+        path: ROUTES.security,
+        icon: 'lock',
+      },
+      {
         label: 'Incident Center',
         path: ROUTES.incidents,
         icon: 'emergency',

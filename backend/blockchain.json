@@ -373,5 +373,35 @@
     "timestamp": "2026-08-12T15:28:39.754567+00:00",
     "previousHash": "29711e7f1dbce4ff10eb405d9dbfd9dd704e143210c3235f6a1c375e4addb06f",
     "hash": "6999c2b95e14d40793d60aa262c6b1107d3417cf09e9899a7198fb92a70d2a50"
+  },
+  {
+    "blockNumber": 26,
+    "requestId": "6af9432d-960f-42c5-bc5c-18ede7a893a8",
+    "task": "purchase $50 of alpha vantage research api access",
+    "provider": "Bloomberg",
+    "amount": 50,
+    "category": "research",
+    "decision": "approved",
+    "decisionType": "approved",
+    "decisionBy": "Guardrails",
+    "reason": "Within auto approval limit.",
+    "timestamp": "2026-08-21T00:28:03.547489+00:00",
+    "previousHash": "6999c2b95e14d40793d60aa262c6b1107d3417cf09e9899a7198fb92a70d2a50",
+    "hash": "da67cac89094feff4764f10cc2ea197261f54fb66a9e7fe25561c62d90ed806f"
+  },
+  {
+    "blockNumber": 27,
+    "requestId": "0eae1e0b-50d1-48b4-b15e-caf1edd34b6a",
+    "task": "send an email from riya@example.com to the client about the payment",
+    "provider": "Stripe",
+    "amount": 100,
+    "category": "payment",
+    "decision": "rejected",
+    "decisionType": "blocked",
+    "decisionBy": "Guardrails",
+    "reason": "Provider is not on the allow list.",
+    "timestamp": "2026-08-21T00:31:43.440543+00:00",
+    "previousHash": "da67cac89094feff4764f10cc2ea197261f54fb66a9e7fe25561c62d90ed806f",
+    "hash": "9ba63fb783553da39fdfe7b8c537e38eb62b7ce1aa6d16e98063d38fe18f9438"
   }
 ]

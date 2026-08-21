@@ -20,6 +20,7 @@ import {
   savePolicy,
   fetchPolicySuggestions,
   applyPolicySuggestion,
+  updateProviderAllowList,
   type PolicySuggestion,
 } from '@/services/policyService'
 
@@ -110,11 +111,70 @@ export function PolicyBuilderPage() {
 
   async function handleSave() {
     if (!editing) return
-    const saved = await savePolicy(editing)
-    const exists = (data ?? []).some((p) => p.id === saved.id)
-    setData(exists ? (data ?? []).map((p) => (p.id === saved.id ? saved : p)) : [saved, ...(data ?? [])])
-    setEditing(null)
-    showToast({ title: 'Policy saved', description: `${saved.name || saved.id} has been published.`, status: 'success' })
+
+    try {
+      // Provider Allow List → update real backend configuration
+      if (editing.id === 'provider-allow-list') {
+        const providers = editing.rules
+          .filter((rule) => rule.field === 'provider')
+          .map((rule) => rule.value.trim())
+          .filter(Boolean)
+
+        const result = await updateProviderAllowList(providers)
+
+        if (!result.success) {
+          throw new Error(
+            result.message || 'Failed to update provider allow list'
+          )
+        }
+
+        // Reload policies from backend
+        await refetch()
+
+        setEditing(null)
+
+        showToast({
+          title: 'Provider allow list updated',
+          description: 'Guardrails will now enforce the updated provider policy.',
+          status: 'success',
+        })
+
+        return
+      }
+
+      // Existing behavior for other policies
+      const saved = await savePolicy(editing)
+
+      const exists = (data ?? []).some(
+        (p) => p.id === saved.id
+      )
+
+      setData(
+        exists
+          ? (data ?? []).map((p) =>
+              p.id === saved.id ? saved : p
+            )
+          : [saved, ...(data ?? [])]
+      )
+
+      setEditing(null)
+
+      showToast({
+        title: 'Policy saved',
+        description: `${saved.name || saved.id} has been published.`,
+        status: 'success',
+      })
+
+    } catch (error) {
+      showToast({
+        title: 'Failed to save policy',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong.',
+        status: 'danger',
+      })
+    }
   }
 
   return (

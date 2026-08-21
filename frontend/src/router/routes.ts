@@ -11,6 +11,7 @@ export const ROUTES = {
   incidents: '/incidents',
   blockchain: '/blockchain',
   analytics: '/analytics',
+  security: '/security',
   auditLogs: '/audit-logs',
   settings: '/settings',
 } as const

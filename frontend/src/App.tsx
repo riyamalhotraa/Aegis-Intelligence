@@ -2,7 +2,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ToastProvider } from '@/contexts/ToastContext'
 import { RouterProvider, useRouter } from '@/contexts/RouterContext'
 import { ROUTES } from '@/router/routes'
-
+import { SecurityPage } from '@/pages/SecurityPage'
 import { MissionControlPage } from '@/pages/MissionControlPage'
 import { AICommandCenterPage } from '@/pages/AICommandCenterPage'
 import { PaymentRequestsPage } from '@/pages/PaymentRequestsPage'
@@ -29,6 +29,7 @@ const routeTable: Record<string, () => JSX.Element> = {
   [ROUTES.analytics]: AnalyticsPage,
   [ROUTES.auditLogs]: AuditLogsPage,
   [ROUTES.settings]: SettingsPage,
+  [ROUTES.security]: SecurityPage,
 }
 
 function AppRouter() {

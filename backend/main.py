@@ -5,7 +5,12 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-
+from security import inspect_payment_request
+from security_events import (
+    record_security_event,
+    get_security_events,
+    get_security_stats,
+)
 
 # ============================================================================
 # AEGIS SERVICES
@@ -120,8 +125,36 @@ def select(request: PromptRequest):
     Automatically approved requests are handled by selector.py.
     Human-approved requests are handled by /requests/{request_id}/decision.
     """
-    return select_api(request.message)
+    # =========================================================
+    # SECURITY LAYER
+    # =========================================================
 
+    security_result = inspect_payment_request({
+        "task": request.message,
+    })
+
+    # ---------------------------------------------------------
+    # BLOCKED
+    # ---------------------------------------------------------
+
+    if security_result["status"] == "blocked":
+
+        return {
+            "decision": "blocked",
+            "reason": "Request blocked by AEGIS Security Layer.",
+            "security": security_result,
+        }
+
+    # =========================================================
+    # GUARDRAILS
+    # =========================================================
+
+    result = select_api(request.message)
+
+    # Attach security information
+    result["security"] = security_result
+
+    return result
 
 # ============================================================================
 # REQUEST HISTORY
@@ -741,6 +774,34 @@ def create_payment(
     data: PaymentRequestCreate,
 ):
 
+    # ---------------------------------------------------------
+    # SECURITY CHECK
+    # ---------------------------------------------------------
+    security_result = inspect_payment_request(
+        data.model_dump()
+    )
+
+    record_security_event(
+        event_type="payment_security_check",
+        request_id=data.request_id,
+        result=security_result["status"],
+        details={
+            "sensitive_fields": security_result["sensitive_fields"],
+            "detected_types": security_result["detected_types"],
+        },
+    )
+
+    if not security_result["passed"]:
+        return {
+            "success": False,
+            "security_blocked": True,
+            "security": security_result,
+            "message": "Payment request contains sensitive information.",
+        }
+
+    # ---------------------------------------------------------
+    # EXISTING PAYMENT CREATION
+    # ---------------------------------------------------------
     try:
 
         payment = create_payment_request(
@@ -766,69 +827,64 @@ def create_payment(
     return {
         "success": True,
 
-        "payment_id":
-            payment.get("payment_id"),
+        "payment_id": payment.get("payment_id"),
 
-        "request_id":
-            payment.get("request_id"),
+        "request_id": payment.get("request_id"),
 
-        "transaction_id":
-            payment.get("transaction_id"),
+        "transaction_id": payment.get("transaction_id"),
 
-        "task":
-            payment.get("task"),
+        "task": payment.get("task"),
 
-        "provider":
-            payment.get("provider"),
+        "provider": payment.get("provider"),
 
-        "api":
-            payment.get("api"),
+        "api": payment.get("api"),
 
-        "amount":
-            payment.get("amount"),
+        "amount": payment.get("amount"),
 
-        "currency":
-            payment.get(
-                "currency",
-                "USDC",
-            ),
+        "currency": payment.get(
+            "currency",
+            "USDC",
+        ),
 
-        "network":
-            payment.get(
-                "network",
-                "Base Sepolia",
-            ),
+        "network": payment.get(
+            "network",
+            "Base Sepolia",
+        ),
 
-        "pay_to":
-            payment.get("pay_to"),
+        "pay_to": payment.get("pay_to"),
 
-        "status":
-            payment.get(
-                "status",
-                "payment_required",
-            ),
+        "status": payment.get(
+            "status",
+            "payment_required",
+        ),
 
-        "payment_signature":
-            payment.get(
-                "payment_signature"
-            ),
+        "payment_signature": payment.get(
+            "payment_signature"
+        ),
 
-        "transaction_hash":
-            payment.get(
-                "transaction_hash"
-            ),
+        "transaction_hash": payment.get(
+            "transaction_hash"
+        ),
 
-        "created_at":
-            payment.get(
-                "created_at"
-            ),
+        "created_at": payment.get(
+            "created_at"
+        ),
 
-        "settled_at":
-            payment.get(
-                "settled_at"
-            ),
+        "settled_at": payment.get(
+            "settled_at"
+        ),
+
+        "security": security_result,
     }
 
+@app.get("/security/status")
+def security_status():
+    return get_security_stats()
+
+
+@app.get("/security/events")
+def security_events_endpoint():
+    return get_security_events()
 
 # ============================================================================
 # TRANSACTIONS
@@ -968,3 +1024,4 @@ def get_payment_details(
         "success": True,
         "payment": payment,
     }
+

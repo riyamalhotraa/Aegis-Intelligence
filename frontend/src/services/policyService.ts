@@ -224,3 +224,28 @@ export async function applyPolicySuggestion(
 
   return response.json()
 }
+
+export async function updateProviderAllowList(
+  providers: string[]
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/policies/provider-allow-list`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        providers,
+      }),
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      'Failed to update provider allow list'
+    )
+  }
+
+  return response.json()
+}

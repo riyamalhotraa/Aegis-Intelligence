@@ -11,8 +11,9 @@ policy_config = {
         "Bloomberg",
         "NewsAPI",
         "Skyscanner",
+        "Google",
         "OpenWeather",
-        "Gmail",
+        
     ],
 
     "auto_approve_limit": 100,
@@ -231,3 +232,16 @@ def reset_frequency_counter():
         "message": "Frequency counter reset.",
         "count": today_request_count,
     }
+
+def update_provider_allow_list(providers: List[str]):
+    cleaned_providers = []
+
+    for provider in providers:
+        provider = provider.strip()
+
+        if provider and provider not in cleaned_providers:
+            cleaned_providers.append(provider)
+
+    policy_config["allowed_providers"] = cleaned_providers
+
+    return policy_config

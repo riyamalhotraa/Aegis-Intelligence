@@ -16,7 +16,7 @@ import type { RiskLevel } from '@/types'
 import { executeTask } from '@/services/taskService'
 import type { ExecuteTaskResponse } from '@/services/taskService'
 import { useTask } from '@/contexts/TaskContext'
-
+import { fetchSecurityStatus } from '@/services/securityService'
 
 // ---------------------------------------------------------------------------
 // AI Task Composer — execution simulation
@@ -167,7 +167,33 @@ export function MissionControlPage() {
       //   }, 800)
 
       const result = await taskPromise
+      
+      console.log('========== AEGIS SECURITY DEBUG ==========')
+      console.log('TASK RESULT:', result)
 
+
+      try {
+        const latestSecurityStatus = await fetchSecurityStatus()
+
+        console.log('SECURITY STATUS AFTER REQUEST:', latestSecurityStatus)
+
+        window.dispatchEvent(
+          new CustomEvent('aegis-security-update', {
+            detail: latestSecurityStatus,
+          })
+        )
+
+        console.log(
+          'Updated security dashboard:',
+          latestSecurityStatus
+        )
+      } catch (securityError) {
+        console.error(
+          'Failed to refresh security dashboard:',
+          securityError
+        )
+      }
+      console.log('==========================================')
       console.log("Backend Response:", result)
 
       if (result.decision === "blocked") {

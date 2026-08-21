@@ -1,10 +1,13 @@
+import { useEffect, useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Icon } from '@/components/icons/Icon'
 import { useAsync } from '@/hooks/useAsync'
-import { fetchSecurityStatus } from '@/services/securityService'
-import { useEffect } from 'react'
+import {
+  fetchSecurityStatus,
+  type SecurityStatus,
+} from '@/services/securityService'
 
 const securityControls = [
   {
@@ -47,14 +50,51 @@ const securityControls = [
 
 export function SecurityPage() {
   const { data, loading, error, refetch } = useAsync(fetchSecurityStatus)
-  
+
+  // Live security data received directly after a request
+  const [liveData, setLiveData] = useState<SecurityStatus | null>(null)
+
+  // Initial data from /security/status
+  useEffect(() => {
+    if (data) {
+      setLiveData(data)
+    }
+  }, [data])
+
+  // Listen for updated security statistics from Mission Control
+  useEffect(() => {
+    function handleSecurityUpdate(event: Event) {
+      const customEvent = event as CustomEvent<SecurityStatus>
+
+      if (customEvent.detail) {
+        setLiveData(customEvent.detail)
+      }
+    }
+
+    window.addEventListener(
+      'aegis-security-update',
+      handleSecurityUpdate
+    )
+
+    return () => {
+      window.removeEventListener(
+        'aegis-security-update',
+        handleSecurityUpdate
+      )
+    }
+  }, [])
+
+  // Keep backend status synchronized as a fallback
   useEffect(() => {
     const interval = setInterval(() => {
       refetch()
-    }, 3000)
+    }, 5000)
 
     return () => clearInterval(interval)
   }, [refetch])
+
+  // Prefer live data, otherwise use the latest API data
+  const currentData = liveData ?? data
 
   return (
     <AppShell title="Security & Privacy" breadcrumb="Govern">
@@ -66,8 +106,14 @@ export function SecurityPage() {
       {error ? (
         <Card className="mb-6">
           <div className="p-5">
-            <p className="font-medium text-ink">Unable to load security status</p>
-            <p className="mt-1 text-body-sm text-ink-muted">{error}</p>
+            <p className="font-medium text-ink">
+              Unable to load security status
+            </p>
+
+            <p className="mt-1 text-body-sm text-ink-muted">
+              {error}
+            </p>
+
             <button
               onClick={refetch}
               className="mt-3 rounded-md bg-accent px-4 py-2 text-body-sm font-medium text-black"
@@ -96,11 +142,13 @@ export function SecurityPage() {
                   </h2>
 
                   <p className="mt-1 max-w-2xl text-body-sm text-ink-muted">
-                    {loading
+                    {loading && !currentData
                       ? 'Loading security status...'
-                      : `${data?.total_checks ?? 0} requests scanned · ${
-                          data?.warnings ?? 0
-                        } warnings · ${data?.blocked ?? 0} blocked`}
+                      : `${liveData?.total_checks ?? data?.total_checks ?? 0} requests scanned · ${
+                          liveData?.warnings ?? data?.warnings ?? 0
+                        } warnings · ${
+                          liveData?.blocked ?? data?.blocked ?? 0
+                        } blocked`}
                   </p>
                 </div>
               </div>
@@ -109,9 +157,9 @@ export function SecurityPage() {
                 <span className="h-2 w-2 rounded-full bg-accent" />
 
                 <span className="text-body-sm font-medium text-accent">
-                  {loading
+                  {loading && !currentData
                     ? 'Checking'
-                    : data?.status === 'healthy'
+                    : currentData?.status === 'healthy'
                       ? 'Healthy'
                       : 'Attention Required'}
                 </span>
@@ -121,46 +169,67 @@ export function SecurityPage() {
 
           {/* Live security metrics */}
           <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+
+            {/* Requests Scanned */}
             <Card>
               <div className="p-5">
                 <p className="text-label uppercase tracking-widest text-ink-faint">
                   Requests Scanned
                 </p>
+
                 <p className="mt-2 text-2xl font-semibold text-ink">
-                  {loading ? '—' : data?.total_checks ?? 0}
+                  {loading && !currentData
+                    ? '—'
+                    : liveData?.total_checks ?? data?.total_checks ?? 0}
                 </p>
               </div>
             </Card>
 
+            {/* Passed */}
             <Card>
               <div className="p-5">
                 <p className="text-label uppercase tracking-widest text-ink-faint">
                   Passed
                 </p>
+
                 <p className="mt-2 text-2xl font-semibold text-accent">
-                  {loading ? '—' : data?.passed ?? 0}
+                  {loading && !currentData
+                    ? '—'
+                    : liveData?.passed ?? data?.passed ?? 0}
                 </p>
               </div>
             </Card>
 
+            {/* Warnings */}
             <Card>
               <div className="p-5">
                 <p className="text-label uppercase tracking-widest text-ink-faint">
                   Warnings
                 </p>
+
                 <p className="mt-2 text-2xl font-semibold text-ink">
-                  {loading ? '—' : data?.warnings ?? 0}
+                  {loading && !currentData
+                    ? '—'
+                    : liveData?.warnings ?? data?.warnings ?? 0}
                 </p>
               </div>
             </Card>
 
+            {/* Audit Coverage */}
             <Card>
               <div className="p-5">
                 <p className="text-label uppercase tracking-widest text-ink-faint">
                   Audit Coverage
                 </p>
+
                 <p className="mt-2 text-2xl font-semibold text-accent">
-                  {loading ? '—' : `${data?.audit_coverage ?? 0}%`}
+                  {loading && !currentData
+                    ? '—'
+                    : `${
+                        liveData?.audit_coverage ??
+                        data?.audit_coverage ??
+                        0
+                      }%`}
                 </p>
               </div>
             </Card>
@@ -202,13 +271,18 @@ export function SecurityPage() {
                 'Human Approval',
                 'Payment Execution',
               ].map((step, index, arr) => (
-                <div key={step} className="flex items-center gap-3">
+                <div
+                  key={step}
+                  className="flex items-center gap-3"
+                >
                   <div className="rounded-lg border border-border bg-surface-high px-4 py-3 text-center text-body-sm font-medium text-ink">
                     {step}
                   </div>
 
                   {index < arr.length - 1 && (
-                    <span className="hidden text-ink-faint lg:block">→</span>
+                    <span className="hidden text-ink-faint lg:block">
+                      →
+                    </span>
                   )}
                 </div>
               ))}
@@ -234,7 +308,10 @@ export function SecurityPage() {
                   className="flex items-center gap-3 rounded-md border border-border bg-surface-low px-4 py-3"
                 >
                   <span className="h-2 w-2 rounded-full bg-accent" />
-                  <span className="text-body-sm text-ink">{item}</span>
+
+                  <span className="text-body-sm text-ink">
+                    {item}
+                  </span>
                 </div>
               ))}
             </div>

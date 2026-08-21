@@ -87,7 +87,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "http://localhost:5175",
+        "http://localhost:5174",
         "https://aegis-frontend-oive.onrender.com",
     ],
     allow_credentials=True,
@@ -153,6 +153,7 @@ def select(request: PromptRequest):
             "detected_types": security_result["detected_types"],
         },
     )
+    security_stats = get_security_stats()
 
     # ---------------------------------------------------------
     # BLOCKED
@@ -164,6 +165,7 @@ def select(request: PromptRequest):
             "decision": "blocked",
             "reason": "Request blocked by AEGIS Security Layer.",
             "security": security_result,
+            "securityStats": security_stats,
         }
 
     # =========================================================
@@ -172,8 +174,8 @@ def select(request: PromptRequest):
 
     result = select_api(request.message)
 
-    # Attach security information
     result["security"] = security_result
+    result["securityStats"] = security_stats
 
     return result
 

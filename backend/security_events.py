@@ -22,28 +22,44 @@ def record_security_event(
 
     security_events.append(event)
 
+    print("🔐 SECURITY EVENT RECORDED")
+    print("   module:", __name__)
+    print("   event:", event)
+    print("   total events:", len(security_events))
+
     return event
 
 
 def get_security_events():
+    print("🔐 SECURITY EVENTS REQUEST")
+    print("   module:", __name__)
+    print("   total events:", len(security_events))
+
     return security_events
 
 
 def get_security_stats():
+    print("🔐 SECURITY STATS REQUEST")
+    print("   module:", __name__)
+    print("   total events:", len(security_events))
+
     total = len(security_events)
 
     passed = sum(
-        1 for event in security_events
+        1
+        for event in security_events
         if event["result"] == "passed"
     )
 
     warnings = sum(
-        1 for event in security_events
+        1
+        for event in security_events
         if event["result"] == "warning"
     )
 
     blocked = sum(
-        1 for event in security_events
+        1
+        for event in security_events
         if event["result"] == "blocked"
     )
 

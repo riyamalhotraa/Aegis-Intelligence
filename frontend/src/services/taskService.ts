@@ -1,5 +1,5 @@
 import { ApiError } from './api'
-
+import type { SecurityStatus } from './securityService'
 const API_BASE_URL = 'https://aegis-backend-lx1z.onrender.com'
 
 export interface ExecuteTaskRequest {
@@ -22,6 +22,28 @@ export interface ExecuteTaskResponse {
   decision: 'approved' | 'human_review' | 'blocked'
   reason: string
   checks: GuardrailCheck[]
+}
+
+export interface ExecuteTaskResponse {
+  task: string
+  provider: string
+  api: string
+  amount: number
+  category: string
+  riskLevel: 'low' | 'medium' | 'high' | 'critical'
+  decision: 'approved' | 'human_review' | 'blocked'
+  reason: string
+  checks: GuardrailCheck[]
+
+  security?: {
+    passed: boolean
+    status: string
+    sensitive_fields: string[]
+    detected_types: string[]
+    warnings: string[]
+  }
+
+  securityStats?: SecurityStatus
 }
 
 export async function executeTask(

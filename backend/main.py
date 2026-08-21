@@ -12,6 +12,8 @@ from security_events import (
     get_security_events,
     get_security_stats,
 )
+from masking import mask_sensitive_data
+from database import initialize_database
 from typing import List
 from policy_store import (
     get_policy_config,
@@ -77,6 +79,7 @@ app = FastAPI(
     title="AEGIS Intelligence API"
 )
 
+initialize_database()
 
 # ============================================================================
 # CORS
@@ -102,6 +105,7 @@ app.add_middleware(
 
 class PromptRequest(BaseModel):
     message: str
+    request_id: str | None = None
 
 
 class DecisionRequest(BaseModel):
@@ -143,15 +147,20 @@ def select(request: PromptRequest):
     security_result = inspect_payment_request({
         "task": request.message,
     })
-
+    request_id = request.request_id or str(uuid4())
+    
     record_security_event(
         event_type="task_security_check",
-        request_id=str(uuid4()),
+        request_id=request_id,
         result=security_result["status"],
         details={
             "sensitive_fields": security_result["sensitive_fields"],
             "detected_types": security_result["detected_types"],
         },
+        sensitive_data=security_result.get(
+            "sensitive_data",
+            {},
+        ),
     )
     security_stats = get_security_stats()
 
@@ -803,10 +812,11 @@ def create_payment(
     security_result = inspect_payment_request(
         data.model_dump()
     )
+    request_id = data.request_id or str(uuid4())
 
     record_security_event(
         event_type="payment_security_check",
-        request_id=data.request_id,
+        request_id=request_id,
         result=security_result["status"],
         details={
             "sensitive_fields": security_result["sensitive_fields"],
@@ -907,7 +917,15 @@ def security_status():
 
 @app.get("/security/events")
 def security_events_endpoint():
-    return get_security_events()
+
+    events = get_security_events()
+
+    for event in events:
+        event["sensitive_data"] = mask_sensitive_data(
+            event.get("sensitive_data", {})
+        )
+
+    return events
 
 # ============================================================================
 # TRANSACTIONS

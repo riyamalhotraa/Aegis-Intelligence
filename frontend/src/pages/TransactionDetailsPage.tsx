@@ -33,7 +33,13 @@ export function TransactionDetailsPage() {
    */
 
   const active: Transaction | undefined =
-    data?.[0]
+    data && data.length > 0
+      ? [...data].sort(
+          (a, b) =>
+            new Date(b.created_at ?? b.timestamp ?? 0).getTime() -
+            new Date(a.created_at ?? a.timestamp ?? 0).getTime()
+        )[0]
+      : undefined
 
 
   // -------------------------------------------------------------------------

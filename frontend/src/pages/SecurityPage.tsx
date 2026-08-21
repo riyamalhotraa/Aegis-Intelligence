@@ -4,6 +4,7 @@ import { Card, CardHeader } from '@/components/ui/Card'
 import { Icon } from '@/components/icons/Icon'
 import { useAsync } from '@/hooks/useAsync'
 import { fetchSecurityStatus } from '@/services/securityService'
+import { useEffect } from 'react'
 
 const securityControls = [
   {
@@ -46,6 +47,14 @@ const securityControls = [
 
 export function SecurityPage() {
   const { data, loading, error, refetch } = useAsync(fetchSecurityStatus)
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch()
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [refetch])
 
   return (
     <AppShell title="Security & Privacy" breadcrumb="Govern">

@@ -418,5 +418,50 @@
     "timestamp": "2026-08-21T10:44:40.267323+00:00",
     "previousHash": "9ba63fb783553da39fdfe7b8c537e38eb62b7ce1aa6d16e98063d38fe18f9438",
     "hash": "04248e480f205efba63f60be8028e4175c3718861e3c120bc6a2986507fc99ca"
+  },
+  {
+    "blockNumber": 29,
+    "requestId": "077d42e7-ee9a-42bb-974b-ab88ca8d5295",
+    "task": "research tesla earnings",
+    "provider": "Bloomberg",
+    "amount": 50,
+    "category": "research",
+    "decision": "approved",
+    "decisionType": "approved",
+    "decisionBy": "Guardrails",
+    "reason": "Within auto approval limit.",
+    "timestamp": "2026-08-21T11:33:14.681207+00:00",
+    "previousHash": "04248e480f205efba63f60be8028e4175c3718861e3c120bc6a2986507fc99ca",
+    "hash": "b3fe75c813a93afd79ae9ceccf0b0d27f0ac9242607eb9a4fef5d22a0b51fe99"
+  },
+  {
+    "blockNumber": 30,
+    "requestId": "b108d460-511c-44ba-a23b-d697618ff45f",
+    "task": "send mail to abc@gmail.com",
+    "provider": "Google",
+    "amount": 0,
+    "category": "email",
+    "decision": "rejected",
+    "decisionType": "blocked",
+    "decisionBy": "Guardrails",
+    "reason": "Daily request frequency limit exceeded.",
+    "timestamp": "2026-08-21T11:33:55.059457+00:00",
+    "previousHash": "b3fe75c813a93afd79ae9ceccf0b0d27f0ac9242607eb9a4fef5d22a0b51fe99",
+    "hash": "ebddc1cc4402cacf160867c0639784a218052d74c6f9cdfc626a17f343fdf209"
+  },
+  {
+    "blockNumber": 31,
+    "requestId": "393157bd-6488-4e1b-83ff-e09f69def02e",
+    "task": "send mail to abc@gmail.com",
+    "provider": "Google",
+    "amount": 0,
+    "category": "email",
+    "decision": "rejected",
+    "decisionType": "blocked",
+    "decisionBy": "Guardrails",
+    "reason": "Daily request frequency limit exceeded.",
+    "timestamp": "2026-08-21T11:34:24.596427+00:00",
+    "previousHash": "ebddc1cc4402cacf160867c0639784a218052d74c6f9cdfc626a17f343fdf209",
+    "hash": "7568681a2db30bf2183295da2470d034443b7b22ab242240645f28aa29644aa2"
   }
 ]

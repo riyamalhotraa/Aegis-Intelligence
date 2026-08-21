@@ -12,7 +12,15 @@ const API_BASE_URL =
   'http://localhost:8000'
 
 export async function fetchSecurityStatus(): Promise<SecurityStatus> {
-  const response = await fetch(`${API_BASE_URL}/security/status`)
+  const response = await fetch(
+    `${API_BASE_URL}/security/status?t=${Date.now()}`,
+    {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    }
+  )
 
   if (!response.ok) {
     throw new Error(

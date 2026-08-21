@@ -7,17 +7,13 @@ export interface SecurityStatus {
   audit_coverage: number
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://aegis-backend-lx1z.onrender.com'
 
 export async function fetchSecurityStatus(): Promise<SecurityStatus> {
   const response = await fetch(
-    `${API_BASE_URL}/security/status?t=${Date.now()}`,
-    {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-    }
+    `${API_BASE_URL}/security/status?t=${Date.now()}`
   )
 
   if (!response.ok) {

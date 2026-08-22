@@ -101,7 +101,11 @@ export function SecurityPage() {
   }, [data])
 
   // ============================================================
-  // LISTEN FOR LIVE UPDATES FROM MISSION CONTROL
+  // LIVE SECURITY UPDATES
+  //
+  // The dashboard no longer polls the backend continuously.
+  // Mission Control can dispatch "aegis-security-update"
+  // whenever a new security check is completed.
   // ============================================================
 
   useEffect(() => {
@@ -109,9 +113,16 @@ export function SecurityPage() {
       const customEvent =
         event as CustomEvent<SecurityStatus>
 
-      if (customEvent.detail) {
-        setLiveData(customEvent.detail)
+      if (!customEvent.detail) {
+        return
       }
+
+      // Update dashboard metrics immediately.
+      setLiveData(customEvent.detail)
+
+      // Refresh the actual event list so the newest
+      // security event appears immediately.
+      refetchEvents()
     }
 
     window.addEventListener(
@@ -125,20 +136,7 @@ export function SecurityPage() {
         handleSecurityUpdate,
       )
     }
-  }, [])
-
-  // ============================================================
-  // LIVE BACKEND REFRESH
-  // ============================================================
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch()
-      refetchEvents()
-    }, 30000)
-
-    return () => clearInterval(interval)
-  }, [refetch, refetchEvents])
+  }, [refetchEvents])
 
   // ============================================================
   // CURRENT SECURITY DATA
@@ -381,12 +379,6 @@ export function SecurityPage() {
                 events
                   .slice(0, 10)
                   .map((event: SecurityEvent) => {
-
-                    // ------------------------------------------------
-                    // Always provide safe empty arrays.
-                    // This prevents rendering errors when older
-                    // events don't contain sensitive_data.
-                    // ------------------------------------------------
 
                     const sensitiveData =
                       event.sensitive_data ?? {

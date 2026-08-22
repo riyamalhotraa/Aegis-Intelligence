@@ -157,10 +157,7 @@ def select(request: PromptRequest):
             "sensitive_fields": security_result["sensitive_fields"],
             "detected_types": security_result["detected_types"],
         },
-        sensitive_data=security_result.get(
-            "sensitive_data",
-            {},
-        ),
+        sensitive_data=security_result["sensitive_data"],
     )
     security_stats = get_security_stats()
 
@@ -915,18 +912,20 @@ def security_status():
     return get_security_stats()
 
 
+# @app.get("/security/events")
+# def security_events_endpoint():
+
+#     events = get_security_events()
+
+#     for event in events:
+#         event["sensitive_data"] = mask_sensitive_data(
+#             event.get("sensitive_data", {})
+#         )
+
+#     return events
 @app.get("/security/events")
 def security_events_endpoint():
-
-    events = get_security_events()
-
-    for event in events:
-        event["sensitive_data"] = mask_sensitive_data(
-            event.get("sensitive_data", {})
-        )
-
-    return events
-
+    return get_security_events()
 # ============================================================================
 # TRANSACTIONS
 # ============================================================================

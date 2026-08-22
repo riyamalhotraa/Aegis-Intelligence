@@ -553,5 +553,20 @@
     "timestamp": "2026-08-22T00:14:24.850097+00:00",
     "previousHash": "8f8a6c4f6d5c5744ed0778c108e3d24f0cd5f10a47d190b12f2a5da4cf2e9511",
     "hash": "68db58faeb92c2e3e5ca7f4d2ab7b8a1cf12b0fd2f81fe076ed441c1bc5f309b"
+  },
+  {
+    "blockNumber": 38,
+    "requestId": "42307d6f-9aaf-43d9-b2ba-17a330dc1ebd",
+    "task": "send the email to riya@example.com, phone +91 9876543210, username: riya_malhotra",
+    "provider": "Google",
+    "amount": 0,
+    "category": "email",
+    "decision": "approved",
+    "decisionType": "approved",
+    "decisionBy": "Guardrails",
+    "reason": "Within auto approval limit.",
+    "timestamp": "2026-08-22T00:39:09.359095+00:00",
+    "previousHash": "68db58faeb92c2e3e5ca7f4d2ab7b8a1cf12b0fd2f81fe076ed441c1bc5f309b",
+    "hash": "fd00039760d06efe0b9d6d34765ff1965c903daa61d2ca49f3e6ee58a3453c48"
   }
 ]

@@ -135,7 +135,7 @@ export function SecurityPage() {
     const interval = setInterval(() => {
       refetch()
       refetchEvents()
-    }, 5000)
+    }, 30000)
 
     return () => clearInterval(interval)
   }, [refetch, refetchEvents])

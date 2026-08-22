@@ -35,20 +35,48 @@ EMAIL_PATTERN = re.compile(
 
 # API keys
 API_KEY_PATTERN = re.compile(
-    r"\b(?:sk_live_|sk_test_|AKIA)[A-Za-z0-9_-]{8,}\b"
+    r"""
+    (?:
+        \bsk_live_[A-Za-z0-9_-]{8,}\b
+        |
+        \bsk_test_[A-Za-z0-9_-]{8,}\b
+        |
+        \bAKIA[A-Za-z0-9]{8,}\b
+        |
+        \bAIza[A-Za-z0-9_-]{20,}\b
+        |
+        \bghp_[A-Za-z0-9]{20,}\b
+        |
+        \bgithub_pat_[A-Za-z0-9_]{20,}\b
+        |
+        \bxox[baprs]-[A-Za-z0-9-]{10,}\b
+    )
+    """,
+    re.IGNORECASE | re.VERBOSE,
 )
 
 
 # Bearer / authorization tokens
 BEARER_PATTERN = re.compile(
-    r"\bBearer\s+[A-Za-z0-9\-._~+/]+=*\b",
-    re.IGNORECASE,
+    r"""
+    \bBearer
+    \s+
+    [A-Za-z0-9\-._~+/]+=*
+    """,
+    re.IGNORECASE | re.VERBOSE,
 )
 
 
 # Phone numbers
 PHONE_PATTERN = re.compile(
-    r"(?<!\d)(?:\+?\d[\d\s().-]{8,}\d)(?!\d)"
+    r"""
+    (?<![A-Za-z0-9])
+    (?:
+        \+?\d[\d\s().-]{8,}\d
+    )
+    (?![A-Za-z0-9])
+    """,
+    re.VERBOSE,
 )
 
 
@@ -200,6 +228,11 @@ def inspect_payment_request(
         # ----------------------------------------------------
 
         username_matches = USERNAME_PATTERN.findall(value)
+
+        username_matches = [
+            username.rstrip(".,!?;:")
+            for username in username_matches
+        ]
 
         for username in username_matches:
 

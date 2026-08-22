@@ -23,12 +23,19 @@ def mask_username(username: str) -> str:
 
 
 def mask_phone(phone: str) -> str:
-    digits = re.sub(r"\D", "", phone)
+    if not phone:
+        return phone
+
+    digits = "".join(
+        character
+        for character in phone
+        if character.isdigit()
+    )
 
     if len(digits) <= 4:
-        return "****"
+        return "*" * len(digits)
 
-    return "*" * (len(digits) - 4) + digits[-4:]
+    return "*" * 7 + digits[-4:]
 
 
 def mask_sensitive_data(

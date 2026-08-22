@@ -13,6 +13,9 @@ import {
   type SecurityEvent,
 } from '@/services/securityService'
 
+// ============================================================
+// SECURITY CONTROLS
+// ============================================================
 
 const securityControls = [
   {
@@ -53,9 +56,11 @@ const securityControls = [
   },
 ]
 
+// ============================================================
+// SECURITY PAGE
+// ============================================================
 
 export function SecurityPage() {
-
   // ============================================================
   // SECURITY STATUS
   // ============================================================
@@ -66,7 +71,6 @@ export function SecurityPage() {
     error,
     refetch,
   } = useAsync(fetchSecurityStatus)
-
 
   // ============================================================
   // SECURITY EVENTS
@@ -79,7 +83,6 @@ export function SecurityPage() {
     refetch: refetchEvents,
   } = useAsync(fetchSecurityEvents)
 
-
   // ============================================================
   // LIVE SECURITY DATA
   // ============================================================
@@ -87,28 +90,22 @@ export function SecurityPage() {
   const [liveData, setLiveData] =
     useState<SecurityStatus | null>(null)
 
-
   // ============================================================
-  // INITIAL DATA
+  // INITIAL / BACKEND DATA
   // ============================================================
 
   useEffect(() => {
-
     if (data) {
       setLiveData(data)
     }
-
   }, [data])
-
 
   // ============================================================
   // LISTEN FOR LIVE UPDATES FROM MISSION CONTROL
   // ============================================================
 
   useEffect(() => {
-
     function handleSecurityUpdate(event: Event) {
-
       const customEvent =
         event as CustomEvent<SecurityStatus>
 
@@ -123,34 +120,25 @@ export function SecurityPage() {
     )
 
     return () => {
-
       window.removeEventListener(
         'aegis-security-update',
         handleSecurityUpdate,
       )
-
     }
-
   }, [])
-
 
   // ============================================================
   // LIVE BACKEND REFRESH
   // ============================================================
 
   useEffect(() => {
-
     const interval = setInterval(() => {
-
       refetch()
       refetchEvents()
-
     }, 5000)
 
     return () => clearInterval(interval)
-
   }, [refetch, refetchEvents])
-
 
   // ============================================================
   // CURRENT SECURITY DATA
@@ -159,29 +147,27 @@ export function SecurityPage() {
   const currentData =
     liveData ?? data
 
+  // ============================================================
+  // RENDER
+  // ============================================================
 
   return (
     <AppShell
       title="Security & Privacy"
       breadcrumb="Govern"
     >
-
       <PageHeader
         title="Security & Privacy"
         description="Protecting sensitive information while keeping autonomous payments controlled and auditable."
       />
-
 
       {/* ======================================================
           ERROR
       ====================================================== */}
 
       {error ? (
-
         <Card className="mb-6">
-
           <div className="p-5">
-
             <p className="font-medium text-ink">
               Unable to load security status
             </p>
@@ -199,36 +185,26 @@ export function SecurityPage() {
             >
               Retry
             </button>
-
           </div>
-
         </Card>
-
       ) : (
-
         <>
-
-
           {/* ==================================================
               SECURITY POSTURE
           ================================================== */}
 
           <Card className="mb-6">
-
             <div className="flex flex-col gap-5 p-5 lg:flex-row lg:items-center lg:justify-between">
 
               <div className="flex items-start gap-4">
 
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
-
                   <Icon
                     name="shield"
                     size={26}
                     filled
                   />
-
                 </div>
-
 
                 <div>
 
@@ -241,52 +217,34 @@ export function SecurityPage() {
                   </h2>
 
                   <p className="mt-1 max-w-2xl text-body-sm text-ink-muted">
-
                     {loading && !currentData
-
                       ? 'Loading security status...'
-
                       : `${currentData?.total_checks ?? 0} requests scanned · ${
                           currentData?.warnings ?? 0
                         } warnings · ${
                           currentData?.blocked ?? 0
-                        } blocked`
-
-                    }
-
+                        } blocked`}
                   </p>
 
                 </div>
-
               </div>
-
 
               <div className="flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2">
 
                 <span className="h-2 w-2 rounded-full bg-accent" />
 
                 <span className="text-body-sm font-medium text-accent">
-
                   {loading && !currentData
-
                     ? 'Checking'
-
                     : currentData?.status === 'healthy'
-
                       ? 'Healthy'
-
-                      : 'Attention Required'
-
-                  }
-
+                      : 'Attention Required'}
                 </span>
 
               </div>
 
             </div>
-
           </Card>
-
 
           {/* ==================================================
               LIVE SECURITY METRICS
@@ -294,11 +252,9 @@ export function SecurityPage() {
 
           <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
 
-
-            {/* Requests */}
+            {/* Requests Scanned */}
 
             <Card>
-
               <div className="p-5">
 
                 <p className="text-label uppercase tracking-widest text-ink-faint">
@@ -306,22 +262,17 @@ export function SecurityPage() {
                 </p>
 
                 <p className="mt-2 text-2xl font-semibold text-ink">
-
                   {loading && !currentData
                     ? '—'
                     : currentData?.total_checks ?? 0}
-
                 </p>
 
               </div>
-
             </Card>
-
 
             {/* Passed */}
 
             <Card>
-
               <div className="p-5">
 
                 <p className="text-label uppercase tracking-widest text-ink-faint">
@@ -329,22 +280,17 @@ export function SecurityPage() {
                 </p>
 
                 <p className="mt-2 text-2xl font-semibold text-accent">
-
                   {loading && !currentData
                     ? '—'
                     : currentData?.passed ?? 0}
-
                 </p>
 
               </div>
-
             </Card>
-
 
             {/* Warnings */}
 
             <Card>
-
               <div className="p-5">
 
                 <p className="text-label uppercase tracking-widest text-ink-faint">
@@ -352,22 +298,17 @@ export function SecurityPage() {
                 </p>
 
                 <p className="mt-2 text-2xl font-semibold text-ink">
-
                   {loading && !currentData
                     ? '—'
                     : currentData?.warnings ?? 0}
-
                 </p>
 
               </div>
-
             </Card>
 
-
-            {/* Audit */}
+            {/* Audit Coverage */}
 
             <Card>
-
               <div className="p-5">
 
                 <p className="text-label uppercase tracking-widest text-ink-faint">
@@ -375,19 +316,15 @@ export function SecurityPage() {
                 </p>
 
                 <p className="mt-2 text-2xl font-semibold text-accent">
-
                   {loading && !currentData
                     ? '—'
                     : `${currentData?.audit_coverage ?? 0}%`}
-
                 </p>
 
               </div>
-
             </Card>
 
           </div>
-
 
           {/* ==================================================
               RECENT SECURITY EVENTS
@@ -400,8 +337,9 @@ export function SecurityPage() {
               subtitle="Sensitive information is masked before being exposed to the application."
             />
 
-
             <div className="divide-y divide-border">
+
+              {/* Loading */}
 
               {eventsLoading ? (
 
@@ -410,6 +348,8 @@ export function SecurityPage() {
                 </div>
 
               ) : eventsError ? (
+
+                /* Error */
 
                 <div className="p-5">
 
@@ -428,150 +368,230 @@ export function SecurityPage() {
 
               ) : !events || events.length === 0 ? (
 
+                /* Empty */
+
                 <div className="p-5 text-body-sm text-ink-muted">
                   No security events recorded yet.
                 </div>
 
               ) : (
 
+                /* Events */
+
                 events
                   .slice(0, 10)
-                  .map((event: SecurityEvent) => (
+                  .map((event: SecurityEvent) => {
 
-                    <div
-                      key={event.id}
-                      className="p-5"
-                    >
+                    // ------------------------------------------------
+                    // Always provide safe empty arrays.
+                    // This prevents rendering errors when older
+                    // events don't contain sensitive_data.
+                    // ------------------------------------------------
 
-                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    const sensitiveData =
+                      event.sensitive_data ?? {
+                        email: [],
+                        phone: [],
+                        username: [],
+                      }
 
+                    const hasEmail =
+                      sensitiveData.email?.length > 0
 
-                        {/* Event information */}
+                    const hasPhone =
+                      sensitiveData.phone?.length > 0
 
-                        <div>
+                    const hasUsername =
+                      sensitiveData.username?.length > 0
 
-                          <div className="flex items-center gap-3">
+                    const hasSensitiveData =
+                      hasEmail ||
+                      hasPhone ||
+                      hasUsername
 
-                            <span className="font-medium text-ink">
-                              {event.event_type}
-                            </span>
+                    return (
 
+                      <div
+                        key={event.id}
+                        className="p-5"
+                      >
 
-                            <span
-                              className={
-                                `rounded-full px-2.5 py-1 text-xs font-medium ${
-                                  event.result === 'blocked'
+                        <div className="flex flex-col gap-5">
 
-                                    ? 'bg-red-500/10 text-red-500'
+                          {/* ==================================================
+                              EVENT HEADER
+                          ================================================== */}
 
-                                    : event.result === 'warning'
+                          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
 
-                                      ? 'bg-yellow-500/10 text-yellow-500'
+                            <div>
 
-                                      : 'bg-accent/10 text-accent'
-                                }`
-                              }
-                            >
-                              {event.result}
-                            </span>
+                              <div className="flex items-center gap-3">
+
+                                <span className="font-medium text-ink">
+                                  {event.event_type}
+                                </span>
+
+                                <span
+                                  className={
+                                    `rounded-full px-2.5 py-1 text-xs font-medium ${
+                                      event.result === 'blocked'
+                                        ? 'bg-red-500/10 text-red-500'
+                                        : event.result === 'warning'
+                                          ? 'bg-yellow-500/10 text-yellow-500'
+                                          : 'bg-accent/10 text-accent'
+                                    }`
+                                  }
+                                >
+                                  {event.result}
+                                </span>
+
+                              </div>
+
+                              <p className="mt-2 text-body-sm text-ink-muted">
+                                Request ID:{' '}
+                                {event.request_id ?? 'N/A'}
+                              </p>
+
+                              <p className="mt-1 text-xs text-ink-faint">
+                                {new Date(
+                                  event.created_at
+                                ).toLocaleString()}
+                              </p>
+
+                            </div>
 
                           </div>
 
+                          {/* ==================================================
+                              DETECTED SENSITIVE DATA
+                          ================================================== */}
 
-                          <p className="mt-1 text-body-sm text-ink-muted">
-                            Request ID:{' '}
-                            {event.request_id ?? 'N/A'}
-                          </p>
+                          <div className="rounded-lg border border-border bg-surface-low p-4">
 
+                            <div className="mb-3 flex items-center gap-2">
 
-                          <p className="mt-1 text-xs text-ink-faint">
+                              <Icon
+                                name="visibility_off"
+                                size={18}
+                              />
 
-                            {new Date(
-                              event.created_at
-                            ).toLocaleString()}
+                              <p className="text-xs font-semibold uppercase tracking-widest text-ink-faint">
+                                Detected Sensitive Data
+                              </p>
 
-                          </p>
+                            </div>
 
-                        </div>
+                            {hasSensitiveData ? (
 
+                              <div className="space-y-2">
 
-                        {/* Sensitive data */}
+                                {/* EMAIL */}
 
-                        <div className="text-body-sm">
+                                {hasEmail && (
+                                  <div className="flex flex-col gap-1 rounded-md border border-border bg-surface-high px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
 
-                          {event.sensitive_data?.email?.length > 0 && (
+                                    <span className="text-body-sm text-ink-muted">
+                                      Email
+                                    </span>
 
-                            <p className="text-ink">
+                                    <span className="font-mono text-body-sm font-medium text-ink">
+                                      {sensitiveData.email.join(', ')}
+                                    </span>
 
-                              Email:{' '}
+                                  </div>
+                                )}
 
-                              <span className="text-ink-muted">
-                                {event.sensitive_data.email.join(', ')}
-                              </span>
+                                {/* PHONE */}
 
-                            </p>
+                                {hasPhone && (
+                                  <div className="flex flex-col gap-1 rounded-md border border-border bg-surface-high px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+
+                                    <span className="text-body-sm text-ink-muted">
+                                      Phone
+                                    </span>
+
+                                    <span className="font-mono text-body-sm font-medium text-ink">
+                                      {sensitiveData.phone.join(', ')}
+                                    </span>
+
+                                  </div>
+                                )}
+
+                                {/* USERNAME */}
+
+                                {hasUsername && (
+                                  <div className="flex flex-col gap-1 rounded-md border border-border bg-surface-high px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+
+                                    <span className="text-body-sm text-ink-muted">
+                                      Username
+                                    </span>
+
+                                    <span className="font-mono text-body-sm font-medium text-ink">
+                                      {sensitiveData.username.join(', ')}
+                                    </span>
+
+                                  </div>
+                                )}
+
+                              </div>
+
+                            ) : (
+
+                              <div className="flex items-center gap-2">
+
+                                <span className="h-2 w-2 rounded-full bg-accent" />
+
+                                <span className="text-body-sm text-ink-faint">
+                                  No sensitive data detected
+                                </span>
+
+                              </div>
+
+                            )}
+
+                          </div>
+
+                          {/* ==================================================
+                              DETECTION SUMMARY
+                          ================================================== */}
+
+                          {event.details?.detected_types &&
+                            event.details.detected_types.length > 0 && (
+
+                              <div className="flex flex-wrap items-center gap-2">
+
+                                <span className="text-xs text-ink-faint">
+                                  Detected:
+                                </span>
+
+                                {event.details.detected_types.map(
+                                  (type: string) => (
+                                    <span
+                                      key={type}
+                                      className="rounded-md border border-border bg-surface-high px-2 py-1 text-xs text-ink-muted"
+                                    >
+                                      {type}
+                                    </span>
+                                  )
+                                )}
+
+                              </div>
 
                           )}
-
-
-                          {event.sensitive_data?.phone?.length > 0 && (
-
-                            <p className="mt-1 text-ink">
-
-                              Phone:{' '}
-
-                              <span className="text-ink-muted">
-                                {event.sensitive_data.phone.join(', ')}
-                              </span>
-
-                            </p>
-
-                          )}
-
-
-                          {event.sensitive_data?.username?.length > 0 && (
-
-                            <p className="mt-1 text-ink">
-
-                              Username:{' '}
-
-                              <span className="text-ink-muted">
-                                {event.sensitive_data.username.join(', ')}
-                              </span>
-
-                            </p>
-
-                          )}
-
-
-                          {(!event.details?.detected_types ||
-                            event.details.detected_types.length === 0) &&
-
-                            event.sensitive_data?.email?.length === 0 &&
-                            event.sensitive_data?.phone?.length === 0 &&
-                            event.sensitive_data?.username?.length === 0 && (
-
-                              <span className="text-ink-faint">
-                                No sensitive data detected
-                              </span>
-
-                            )
-                          }
 
                         </div>
 
                       </div>
 
-                    </div>
-
-                  ))
+                    )
+                  })
 
               )}
 
             </div>
 
           </Card>
-
 
           {/* ==================================================
               SECURITY CONTROLS
@@ -594,11 +614,9 @@ export function SecurityPage() {
 
                   </div>
 
-
                   <h3 className="text-body-lg font-semibold text-ink">
                     {control.title}
                   </h3>
-
 
                   <p className="mt-2 text-body-sm leading-relaxed text-ink-muted">
                     {control.description}
@@ -612,7 +630,6 @@ export function SecurityPage() {
 
           </div>
 
-
           {/* ==================================================
               SECURE PAYMENT FLOW
           ================================================== */}
@@ -623,7 +640,6 @@ export function SecurityPage() {
               title="Secure Payment Flow"
               subtitle="Sensitive information is controlled before a transaction reaches execution."
             />
-
 
             <div className="flex flex-col items-center gap-3 px-5 pb-6 lg:flex-row lg:justify-center">
 
@@ -644,13 +660,10 @@ export function SecurityPage() {
                     {step}
                   </div>
 
-
                   {index < arr.length - 1 && (
-
                     <span className="hidden text-ink-faint lg:block">
                       →
                     </span>
-
                   )}
 
                 </div>
@@ -660,7 +673,6 @@ export function SecurityPage() {
             </div>
 
           </Card>
-
 
           {/* ==================================================
               PRODUCTION SECURITY ROADMAP
@@ -672,7 +684,6 @@ export function SecurityPage() {
               title="Production Security Roadmap"
               subtitle="Additional controls planned for production integrations."
             />
-
 
             <div className="grid grid-cols-1 gap-3 px-5 pb-5 md:grid-cols-2">
 
@@ -703,7 +714,6 @@ export function SecurityPage() {
           </Card>
 
         </>
-
       )}
 
     </AppShell>
